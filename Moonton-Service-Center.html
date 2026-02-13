@@ -35,7 +35,6 @@
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             /* KRUSIAL: background-color body disetel ke abu-abu terang */
-            background-color: #e5e7eb;
             display: flex;
             align-items: center; /* Center vertically on full screen */
             justify-content: center; /* Center horizontally */
@@ -48,19 +47,14 @@
         
         /* [KRUSIAL] Kontainer utama (#chatView) */
         #chatView {
-            width: 100%;
-            max-width: 600px;
-            height: 90vh;
-            max-height: 800px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Kontainer utama harus overflow hidden */
-            position: relative; 
-            z-index: 10;
-        }
+    width: 100%;
+    max-width: 600px;
+    height: 100vh;
+    background-color: transparent; /* Sekarang transparan */
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto; /* Menjaga tetap di tengah secara horizontal */
+}
 
         /* Chat Header Style */
         #chatView header {
@@ -74,7 +68,7 @@
             flex-grow: 1;
             /* KRUSIAL: Ini adalah area yang bisa digulir */
             overflow-y: auto; 
-            background-color: #f8f8f8; 
+            background-color: transparent; 
             padding: 1rem;
             width: 100%;
             /* KRUSIAL: Memastikan pesan berbaris vertikal */
@@ -93,25 +87,26 @@
 
         /* Chat Bubble Styles */
         .message-bubble {
-            max-width: 90%; 
-            border-radius: 0.75rem;
-            padding: 0.5rem 1rem;
-            word-wrap: break-word;
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-            display: inline-block; /* Memungkinkan bubble mengikuti konten */
-        }
-        .bot-message {
-            background-color: #ffffff;
-            border-bottom-left-radius: 0.125rem;
-            animation: fadeInSlideUp 0.3s ease-out forwards;
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        .user-message {
-            background-color: #2563eb;
-            color: white;
-            border-bottom-right-radius: 0.125rem;
-        }
+    max-width: 85%;
+    padding: 10px 16px;
+    font-size: 14px;
+    margin-bottom: 8px; /* Tambahan agar antar pesan ada jarak */
+}
+
+.bot-message {
+    background-color: #ffffff;
+    color: #1f2937;
+    border-radius: 18px 18px 18px 4px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+    animation: fadeInSlideUp 0.3s ease-out forwards;
+}
+
+.user-message {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-radius: 18px 18px 4px 18px;
+    align-self: flex-end; /* Memastikan pesan user tetap di kanan */
+}
         /* Keyframe untuk animasi pesan bot */
         @keyframes fadeInSlideUp {
             from { opacity: 0; transform: translateY(10px); }
@@ -724,6 +719,21 @@
             background-color: var(--bg-card); 
             border-color: var(--header-border); 
         }
+        .input-container {
+    padding: 20px;
+    background-color: transparent; /* Membuat area sekitar input tembus pandang */
+}
+
+/* Ini untuk mengatur kotak input agar lonjong dan melayang */
+.input-wrapper-modern {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 25px; 
+    padding: 8px 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
     </style>
 </head>
 <body class="flex items-center justify-center p-4 sm:p-6" onload="initializeFirebase()">
@@ -1755,3 +1765,4 @@
 </body>
 
 </html>
+
