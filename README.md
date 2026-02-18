@@ -1,1 +1,1494 @@
-# Moonton-Service-Center
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Admin • Customer Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #121B22;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .android-app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #121B22;
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        /* Status Bar - Dikosongkan bagian atas */
+        .status-bar {
+            background: #121B22;
+            padding: 0px 16px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            color: #E9EDEF;
+            font-size: 14px;
+            height: 40px;
+        }
+
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #00A884;
+            color: #00A884;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #00A884;
+            color: white;
+        }
+
+        .logout-btn.logged-in {
+            background: #00A884;
+            color: white;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .tab-navigation {
+            background: #1F2C34;
+            display: flex;
+            padding: 8px 16px;
+            gap: 24px;
+            border-bottom: 1px solid #2A3942;
+        }
+
+        .tab-item {
+            color: #8696A0;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: #00A884;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #00A884;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .search-bar {
+            background: #1F2C34;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-bar i {
+            color: #8696A0;
+            font-size: 18px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: #2A3942;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: #E9EDEF;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: #8696A0;
+        }
+
+        .search-bar input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #1F2C34;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #2A3942;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #00A884;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 18px;
+            color: white;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #E9EDEF;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #8696A0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            background: #121B22;
+            padding: 8px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #1F2C34;
+            margin-bottom: 1px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .chat-item:active {
+            background: #2A3942;
+        }
+
+        .chat-item.active {
+            background: #2A3942;
+            border-left: 4px solid #00A884;
+        }
+
+        .chat-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #00A884;
+            border: 2px solid #1F2C34;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .chat-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #E9EDEF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .chat-time {
+            font-size: 11px;
+            color: #8696A0;
+        }
+
+        .chat-preview {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-preview-text {
+            font-size: 13px;
+            color: #8696A0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 170px;
+        }
+
+        .unread-count {
+            background: #00A884;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+        }
+
+        .chat-area {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #0B141A;
+            position: relative;
+        }
+
+        .chat-area.active {
+            display: flex;
+        }
+
+        .chat-header-android {
+            background: #1F2C34;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: #00A884;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-header-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .header-details {
+            flex: 1;
+        }
+
+        .header-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #E9EDEF;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #3897F0;
+            color: white;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-left: 4px;
+        }
+
+        .verified-badge i {
+            font-size: 10px;
+        }
+
+        .header-status {
+            font-size: 12px;
+            color: #8696A0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00A884;
+        }
+
+        .status-dot.offline {
+            background: #8696A0;
+        }
+
+        .messages-android {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #0B141A;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message-row {
+            display: flex;
+            margin-bottom: 4px;
+        }
+
+        .message-row.incoming {
+            justify-content: flex-start;
+        }
+
+        .message-row.outgoing {
+            justify-content: flex-end;
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+        }
+
+        .message-bubble {
+            position: relative;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message-bubble.incoming {
+            background: #1F2C34;
+            color: #E9EDEF;
+            border-top-left-radius: 4px;
+        }
+
+        .message-bubble.outgoing {
+            background: #005C4B;
+            color: #E9EDEF;
+            border-top-right-radius: 4px;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 10px;
+        }
+        
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .admin-name-in-bubble {
+            color: #FFFFFF;
+            font-weight: 400;
+            font-size: 10px;
+        }
+        
+        .verified-blue-check {
+            display: inline-flex;
+            width: 16px;
+            height: 16px;
+            background-image: url('https://i.postimg.cc/bvDvp5Cd/image-4-1024x683-removebg-preview.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .message-time {
+            color: #8696A0;
+            font-size: 10px;
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .date-separator span {
+            background: #1F2C34;
+            color: #8696A0;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 16px;
+        }
+
+        .input-android {
+            background: #1F2C34;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #2A3942;
+            min-height: 70px;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background: #2A3942;
+            border-radius: 24px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #E9EDEF;
+            font-size: 15px;
+            resize: none;
+            max-height: 100px;
+            outline: none;
+            font-family: inherit;
+            padding: 8px 0;
+            line-height: 1.5;
+        }
+
+        .input-wrapper textarea::placeholder {
+            color: #8696A0;
+        }
+
+        .input-wrapper textarea:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .send-btn-android {
+            background: #00A884;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn-android:active {
+            opacity: 0.8;
+        }
+
+        .send-btn-android:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8696A0;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #2A3942;
+            border-top-color: #00A884;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* LOGIN MODAL untuk admin */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.active { 
+            display: flex; 
+        }
+        
+        .modal-content {
+            background: #1F2C34;
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+            border: 1px solid #2A3942;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .modal-header h2 {
+            color: #00A884;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .modal-header p {
+            color: #8696A0;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #E9EDEF;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #2A3942;
+            border: 1px solid #3B4A54;
+            border-radius: 8px;
+            color: #E9EDEF;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .input-group input:focus {
+            border-color: #00A884;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8696A0;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .login-btn-modal {
+            width: 100%;
+            padding: 14px;
+            background: #00A884;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        
+        .login-btn-modal:hover {
+            background: #00BFA5;
+        }
+        
+        .login-btn-modal:active {
+            background: #008F7A;
+        }
+        
+        .error-message {
+            color: #FF6B6B;
+            font-size: 12px;
+            margin-top: 12px;
+            text-align: center;
+            min-height: 20px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: #8696A0;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        /* Admin info di status bar */
+        .admin-email {
+            color: #00A884;
+            font-size: 13px;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        /* Loading overlay untuk inisialisasi */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #121B22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-content i {
+            font-size: 48px;
+            color: #00A884;
+            margin-bottom: 16px;
+        }
+        
+        .loading-content p {
+            color: #E9EDEF;
+            font-size: 14px;
+        }
+    </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <p>Initializing Firebase...</p>
+        </div>
+    </div>
+
+    <div class="android-app">
+        <!-- Status Bar dengan login/logout - hanya tombol login di kanan -->
+        <div class="status-bar">
+            <div class="status-bar-right">
+                <span id="adminEmail" class="admin-email"></span>
+                <button id="loginLogoutBtn" class="logout-btn" onclick="handleLoginLogout()">Login</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <div class="tab-navigation">
+                <div class="tab-item active" onclick="switchTab('chats')">Chats</div>
+                <div class="tab-item" onclick="switchTab('stats')">Stats</div>
+            </div>
+
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search chats..." disabled>
+            </div>
+
+            <div class="stats-row" id="statsRow" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="onlineCount">0</div>
+                        <div class="stat-label">Online</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-regular fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-list" id="chatList">
+                <div class="empty-state">
+                    <i class="fa-regular fa-lock"></i>
+                    <p>Please login to access dashboard</p>
+                </div>
+            </div>
+
+            <div class="chat-area" id="chatArea">
+                <div class="chat-header-android">
+                    <button class="back-btn" onclick="closeChat()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-header-info" id="chatHeaderInfo">
+                        <div class="header-avatar" id="headerAvatar"></div>
+                        <div class="header-details">
+                            <div class="header-name" id="headerName">
+                                Customer
+                                <span class="verified-badge"><i class="fa-solid fa-check"></i></span>
+                            </div>
+                            <div class="header-status" id="headerStatus">
+                                <span class="status-dot" id="statusDot"></span>
+                                <span id="statusText">Offline</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="messages-android" id="messagesContainer"></div>
+
+                <div class="input-android">
+                    <div class="input-wrapper">
+                        <textarea id="messageInput" placeholder="Type a message..." rows="1" disabled></textarea>
+                    </div>
+                    <button class="send-btn-android" id="sendButton" onclick="sendMessage()" disabled>
+                        <i class="fa-regular fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL untuk Admin -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-content">
+            <i class="fas fa-times close-modal" onclick="closeLoginModal()"></i>
+            
+            <div class="modal-header">
+                <h2>Admin Login</h2>
+                <p>Masuk sebagai administrator</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="adminEmailInput" placeholder="admin@example.com">
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <div class="password-container">
+                    <input type="password" id="adminPassword" placeholder="Password">
+                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility()"></i>
+                </div>
+            </div>
+            
+            <button class="login-btn-modal" onclick="adminLogin()">Login</button>
+            <div id="loginMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLhptp927yuM1q8Om1MP-d90X03E8HAl4",
+            authDomain: "apk-chat-8edd4.firebaseapp.com",
+            databaseURL: "https://apk-chat-8edd4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "apk-chat-8edd4",
+            storageBucket: "apk-chat-8edd4.firebasestorage.app",
+            messagingSenderId: "484815534171",
+            appId: "1:484815534171:web:a13bb73588bb8e764fe77e"
+        };
+
+        const ADMIN_AVATAR_URL = "https://i.postimg.cc/L4V4z626/photo-2026-02-15-23-40-51.jpg";
+        const CUSTOMER_AVATAR_URL = "https://i.postimg.cc/pL3P2mYJ/photo-2026-02-15-23-40-54.jpg";
+        const ADMIN_NAME = "Gm Nita";
+
+        // State variables
+        let app = null;
+        let auth = null;
+        let database = null;
+        let currentChatId = null;
+        let currentCustomer = null;
+        let customers = {};
+        let messagesRef = null;
+        let currentAdmin = null;
+        let firebaseInitialized = false;
+
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const searchInput = document.getElementById('searchInput');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const loginLogoutBtn = document.getElementById('loginLogoutBtn');
+        const adminEmailSpan = document.getElementById('adminEmail');
+
+        // Fungsi untuk toggle password visibility
+        window.togglePasswordVisibility = function() {
+            const passwordInput = document.getElementById('adminPassword');
+            const icon = event.currentTarget;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        // Fungsi untuk membuka modal login
+        window.openLoginModal = function() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.add('active');
+            document.getElementById('loginMessage').textContent = '';
+            document.getElementById('adminEmailInput').value = '';
+            document.getElementById('adminPassword').value = '';
+        };
+
+        // Fungsi untuk menutup modal login
+        window.closeLoginModal = function() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('active');
+        };
+
+        // Fungsi untuk handle login/logout
+        window.handleLoginLogout = function() {
+            if (currentAdmin) {
+                adminLogout();
+            } else {
+                openLoginModal();
+            }
+        };
+
+        // Initialize Firebase
+        async function initializeFirebase() {
+            try {
+                console.log("Initializing Firebase...");
+                
+                // Initialize Firebase app
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                database = firebase.database();
+                
+                console.log("Firebase initialized successfully");
+                
+                // Test connection
+                await database.ref('.info/connected').once('value');
+                console.log("Firebase connected");
+                
+                firebaseInitialized = true;
+                
+                // Hide loading overlay
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden');
+                }, 500);
+                
+                // Setup auth state observer
+                setupAuthObserver();
+                
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                
+                // Show error in loading overlay
+                document.querySelector('.loading-content p').innerHTML = 
+                    `❌ Firebase Error: ${error.message}<br><br>Please check console for details.`;
+                
+                return false;
+            }
+        }
+
+        // Setup auth state observer
+        function setupAuthObserver() {
+            auth.onAuthStateChanged((user) => {
+                console.log("Auth state changed:", user ? user.email : "No user");
+                
+                if (user) {
+                    currentAdmin = user;
+                    adminEmailSpan.textContent = user.email;
+                    loginLogoutBtn.textContent = 'Logout';
+                    loginLogoutBtn.classList.add('logged-in');
+                    
+                    // Enable inputs
+                    searchInput.disabled = false;
+                    if (messageInput) messageInput.disabled = false;
+                    if (sendButton) sendButton.disabled = false;
+                    
+                    // Start listening
+                    startListening();
+                    
+                } else {
+                    currentAdmin = null;
+                    adminEmailSpan.textContent = '';
+                    loginLogoutBtn.textContent = 'Login';
+                    loginLogoutBtn.classList.remove('logged-in');
+                    
+                    // Disable inputs
+                    searchInput.disabled = true;
+                    if (messageInput) messageInput.disabled = true;
+                    if (sendButton) sendButton.disabled = true;
+                    
+                    // Stop listening
+                    if (messagesRef) {
+                        messagesRef.off();
+                    }
+                    
+                    // Show login prompt
+                    document.getElementById('chatList').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-regular fa-lock"></i>
+                            <p>Please login to access dashboard</p>
+                        </div>
+                    `;
+                    
+                    // Hide chat area if open
+                    if (document.querySelector('.chat-area.active')) {
+                        closeChat();
+                    }
+                    
+                    customers = {};
+                    
+                    // Reset stats
+                    document.getElementById('onlineCount').textContent = '0';
+                    document.getElementById('totalCount').textContent = '0';
+                }
+            });
+        }
+
+        // Admin login
+        window.adminLogin = async function() {
+            if (!firebaseInitialized) {
+                document.getElementById('loginMessage').textContent = 'Firebase not initialized yet';
+                return;
+            }
+            
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const messageEl = document.getElementById('loginMessage');
+
+            messageEl.textContent = '';
+
+            if (!email || !password) {
+                messageEl.textContent = 'Email dan password harus diisi';
+                return;
+            }
+
+            messageEl.textContent = 'Memproses...';
+            messageEl.style.color = '#00A884';
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                
+                // Update admin status in database
+                if (database) {
+                    await database.ref('admins/' + userCredential.user.uid).set({
+                        email: email,
+                        name: ADMIN_NAME,
+                        online: true,
+                        lastLogin: new Date().toISOString()
+                    });
+                }
+                
+                // Close modal
+                closeLoginModal();
+                
+            } catch (error) {
+                console.error("Login error:", error);
+                
+                let errorMessage = 'Login gagal';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        errorMessage = 'Email atau password salah';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Format email tidak valid';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Terlalu banyak percobaan. Coba lagi nanti';
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                messageEl.textContent = errorMessage;
+                messageEl.style.color = '#FF6B6B';
+            }
+        };
+
+        // Admin logout
+        async function adminLogout() {
+            if (currentAdmin && database) {
+                await database.ref('admins/' + currentAdmin.uid).update({
+                    online: false,
+                    lastSeen: new Date().toISOString()
+                }).catch(error => {
+                    console.error("Error updating admin status:", error);
+                });
+            }
+            
+            await auth.signOut();
+        }
+
+        // Start listening to database
+        function startListening() {
+            if (!currentAdmin || !database) return;
+            
+            console.log("Starting database listeners...");
+            
+            // Listen for all users
+            database.ref('users').on('value', (snapshot) => {
+                customers = snapshot.val() || {};
+                renderChatList();
+                updateStats();
+            });
+
+            // Listen for all chats
+            database.ref('chats').on('value', (snapshot) => {
+                const chats = snapshot.val() || {};
+                
+                Object.keys(chats).forEach(chatId => {
+                    if (customers[chatId]) {
+                        customers[chatId].lastMessage = chats[chatId].lastMessage;
+                        customers[chatId].lastUpdate = chats[chatId].lastUpdate;
+                        customers[chatId].unread = chats[chatId].unread || 0;
+                    }
+                });
+                
+                renderChatList();
+            });
+
+            // Listen for new messages
+            database.ref('messages').on('child_added', (snapshot) => {
+                const chatId = snapshot.key;
+                
+                if (customers[chatId]) {
+                    database.ref('chats/' + chatId).once('value', (chatSnap) => {
+                        const chatData = chatSnap.val();
+                        if (chatData) {
+                            customers[chatId].lastMessage = chatData.lastMessage;
+                            customers[chatId].lastUpdate = chatData.lastUpdate;
+                            renderChatList();
+                        }
+                    });
+                }
+                
+                if (currentChatId === chatId) {
+                    loadMessages(chatId);
+                }
+            });
+        }
+
+        // Switch tab
+        window.switchTab = function(tab) {
+            if (!currentAdmin) {
+                alert('Silakan login terlebih dahulu');
+                return;
+            }
+            
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'chats') {
+                document.querySelectorAll('.tab-item')[0].classList.add('active');
+                document.getElementById('statsRow').style.display = 'none';
+            } else {
+                document.querySelectorAll('.tab-item')[1].classList.add('active');
+                document.getElementById('statsRow').style.display = 'flex';
+            }
+        };
+
+        // Render chat list
+        function renderChatList() {
+            if (!currentAdmin) return;
+            
+            const listElement = document.getElementById('chatList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let chatArray = Object.keys(customers).map(uid => ({
+                uid,
+                ...customers[uid]
+            }));
+            
+            chatArray.sort((a, b) => {
+                const timeA = a.lastUpdate ? new Date(a.lastUpdate) : new Date(0);
+                const timeB = b.lastUpdate ? new Date(b.lastUpdate) : new Date(0);
+                return timeB - timeA;
+            });
+
+            if (searchTerm) {
+                chatArray = chatArray.filter(c => 
+                    (c.email && c.email.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (chatArray.length === 0) {
+                listElement.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-regular fa-comments"></i>
+                        <p>No conversations yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listElement.innerHTML = chatArray.map(customer => {
+                const isOnline = customer.online;
+                const lastMessage = customer.lastMessage || 'No messages yet';
+                const lastTime = customer.lastUpdate ? new Date(customer.lastUpdate).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : '';
+                const unread = customer.unread || 0;
+                
+                return `
+                    <div class="chat-item ${currentChatId === customer.uid ? 'active' : ''}" onclick="selectChat('${customer.uid}')">
+                        <div class="chat-avatar" style="background-image: url('${CUSTOMER_AVATAR_URL}');">
+                            ${isOnline ? '<span class="online-indicator"></span>' : ''}
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-header">
+                                <span class="chat-name">${customer.email || 'Unknown'}</span>
+                                <span class="chat-time">${lastTime}</span>
+                            </div>
+                            <div class="chat-preview">
+                                <span class="chat-preview-text">${lastMessage}</span>
+                                ${unread > 0 ? `<span class="unread-count">${unread}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update stats
+        function updateStats() {
+            if (!currentAdmin) return;
+            
+            const customerArray = Object.values(customers);
+            document.getElementById('onlineCount').textContent = customerArray.filter(c => c.online).length;
+            document.getElementById('totalCount').textContent = customerArray.length;
+        }
+
+        // Search input listener
+        document.getElementById('searchInput').addEventListener('input', renderChatList);
+
+        // Select chat
+        window.selectChat = function(uid) {
+            if (!currentAdmin) {
+                alert('Silakan login terlebih dahulu');
+                return;
+            }
+            
+            currentChatId = uid;
+            currentCustomer = customers[uid];
+            
+            document.querySelector('.chat-list').style.display = 'none';
+            document.querySelector('.chat-area').classList.add('active');
+            
+            document.getElementById('headerAvatar').style.backgroundImage = `url('${CUSTOMER_AVATAR_URL}')`;
+            
+            const headerName = document.getElementById('headerName');
+            headerName.innerHTML = `${currentCustomer.email || 'Customer'} <span class="verified-badge"><i class="fa-solid fa-check"></i></span>`;
+            
+            const isOnline = currentCustomer.online;
+            document.getElementById('statusDot').className = `status-dot ${isOnline ? '' : 'offline'}`;
+            document.getElementById('statusText').textContent = isOnline ? 'Online' : 'Offline';
+            
+            database.ref('chats/' + uid).update({ unread: 0 });
+            
+            loadMessages(uid);
+        };
+
+        // Close chat
+        window.closeChat = function() {
+            currentChatId = null;
+            currentCustomer = null;
+            
+            document.querySelector('.chat-list').style.display = 'block';
+            document.querySelector('.chat-area').classList.remove('active');
+            
+            if (messagesRef) {
+                messagesRef.off();
+            }
+        };
+
+        // Load messages
+        function loadMessages(chatId) {
+            if (!currentAdmin) return;
+            
+            if (messagesRef) {
+                messagesRef.off();
+            }
+
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '<div class="loading-spinner"></div>';
+
+            messagesRef = database.ref('messages/' + chatId);
+            messagesRef.on('value', (snapshot) => {
+                const messages = snapshot.val() || {};
+                displayMessages(Object.values(messages));
+            });
+        }
+
+        // Display messages
+        function displayMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            
+            if (messages.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-regular fa-message"></i>
+                        <p>No messages yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            let lastDate = null;
+            let html = '';
+
+            messages.forEach(msg => {
+                const msgDate = new Date(msg.timestamp).toDateString();
+                
+                if (msgDate !== lastDate) {
+                    const dateStr = new Date(msg.timestamp).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    html += `<div class="date-separator"><span>${dateStr}</span></div>`;
+                    lastDate = msgDate;
+                }
+
+                const isOutgoing = msg.sender === 'admin';
+                const time = new Date(msg.timestamp).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                if (isOutgoing) {
+                    html += `
+                        <div class="message-row outgoing">
+                            <div class="message-wrapper">
+                                <div class="message-bubble outgoing">
+                                    <div>${msg.text}</div>
+                                    <div class="message-meta">
+                                        <div class="admin-info">
+                                            <span class="admin-name-in-bubble">[${ADMIN_NAME}]</span>
+                                            <span class="verified-blue-check"></span>
+                                        </div>
+                                        <span class="message-time">${time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="message-row incoming">
+                            <div class="message-wrapper">
+                                <div class="message-bubble incoming">
+                                    <div>${msg.text}</div>
+                                    <div class="message-meta">
+                                        <div></div>
+                                        <span class="message-time">${time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Send message
+        window.sendMessage = function() {
+            if (!currentAdmin) {
+                alert('Silakan login terlebih dahulu');
+                return;
+            }
+            
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message || !currentChatId) return;
+
+            const messageData = {
+                sender: 'admin',
+                senderId: 'admin',
+                senderName: ADMIN_NAME,
+                text: message,
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+
+            database.ref('messages/' + currentChatId).push(messageData)
+                .then(() => {
+                    database.ref('chats/' + currentChatId).update({
+                        lastMessage: message,
+                        lastUpdate: new Date().toISOString(),
+                        unread: 0
+                    });
+                    
+                    input.value = '';
+                    input.style.height = 'auto';
+                });
+        };
+
+        // Auto resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Enter to send
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Modal click outside to close
+        const modal = document.getElementById('loginModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) closeLoginModal();
+            });
+        }
+
+        // Initialize Firebase when page loads
+        window.addEventListener('load', () => {
+            initializeFirebase();
+        });
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (messagesRef) {
+                messagesRef.off();
+            }
+        });
+    </script>
+</body>
+</html>
